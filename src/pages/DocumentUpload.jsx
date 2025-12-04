@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import './DocumentUpload.css';
 
 function DocumentUpload() {
   const [selectedFile, setSelectedFile] = useState(null);
+  const navigate = useNavigate(); // Initialize useNavigate
 
   const handleFileChange = (event) => {
     setSelectedFile(event.target.files[0]);
@@ -10,17 +13,21 @@ function DocumentUpload() {
   const handleUpload = () => {
     if (selectedFile) {
       console.log('Uploading file:', selectedFile);
-      // Here you would typically send the file to a server
+      // Placeholder for actual upload logic
+      
+      // Navigate to the new page after "upload"
+      navigate('/interact', { state: { uploadedFile: selectedFile } });
     } else {
       console.log('No file selected');
     }
   };
 
   return (
-    <div>
-      <h1>Document Upload Page</h1>
+    <div className="document-upload-container">
+      <h1>Document Upload</h1>
+      <p>Select a file to begin.</p>
       <input type="file" onChange={handleFileChange} />
-      <button onClick={handleUpload}>Upload</button>
+      <button onClick={handleUpload} disabled={!selectedFile}>Upload</button>
     </div>
   );
 }

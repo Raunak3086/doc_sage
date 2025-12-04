@@ -1,24 +1,16 @@
-import { Routes, Route, Link } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import DocumentUpload from './pages/DocumentUpload';
+import Interact from './pages/Interact'; // Import the new Interact component
 import './App.css';
 
 function App() {
   return (
     <>
-      <nav>
-        <ul>
-          <li>
-            <Link to="/">Home</Link>
-          </li>
-          <li>
-            <Link to="/upload">Document Upload</Link>
-          </li>
-        </ul>
-      </nav>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/upload" element={<DocumentUpload />} />
+        <Route path="/interact" element={<Interact />} /> {/* Add the new route */}
       </Routes>
     </>
   );

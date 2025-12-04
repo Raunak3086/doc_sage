@@ -1,0 +1,21 @@
+.home-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    min-height: 100vh;
+    padding: 20px;
+    background: linear-gradient(to bottom, var(--yellow-ranger-dark-grey), var(--yellow-ranger-black));
+}
+
+.home-content h1 {
+    color: var(--yellow-ranger-yellow);
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.home-content p {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    color: #ccc;
+}
