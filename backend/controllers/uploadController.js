@@ -1,6 +1,6 @@
 import { embedText } from '../services/embedText.js';
 import { pool } from '../services/db.js';
-import pdf from 'pdf-parse';
+import {PDFParse} from 'pdf-parse';
 import multer from 'multer';
 
 const upload = multer({ storage: multer.memoryStorage() });
@@ -19,7 +19,7 @@ const uploadController = async (req, res) => {
             return res.status(400).send('No file uploaded.');
         }
 
-        const data = await pdf(req.file.buffer);
+        const data = await PDFParse(req.file.buffer);
         const text = data.text;
         const filename = req.file.originalname;
 
