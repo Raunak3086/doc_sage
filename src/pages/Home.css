@@ -1,21 +1,69 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden; /* Hide scrollbars */
+    box-sizing: border-box; /* Include padding in element's total width and height */
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Moved font family here */
+    background-color: var(--black-ranger-black); /* Solid black background for body */
+    color: var(--black-ranger-white); /* Default text color */
+}
+
+:root {
+    --black-ranger-black: #0d0d0d;
+    --black-ranger-dark-grey: #1a1a1a;
+    --black-ranger-silver: #c0c0c0;
+    --black-ranger-white: #f5f5f5;
+    --black-ranger-glow: rgba(220, 220, 220, 0.4);
+}
+
 .home-container {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    min-height: 100vh;
-    padding: 20px;
-    background: linear-gradient(to bottom, var(--yellow-ranger-dark-grey), var(--yellow-ranger-black));
+    justify-content: center; /* Changed to center */
+    align-items: center;    /* Changed to center */
+    text-align: center;      /* Changed to center */
+    height: 100%;
+    padding: 20px; /* Reset padding for symmetrical centering */
+    background: radial-gradient(ellipse at center, var(--black-ranger-dark-grey), var(--black-ranger-black)); /* Added shadow effect */
+    box-sizing: border-box;
 }
 
 .home-content h1 {
-    color: var(--yellow-ranger-yellow);
-    font-size: 3rem;
-    margin-bottom: 1rem;
+    color: var(--black-ranger-white);
+    font-size: 5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    text-shadow: 0 0 20px var(--black-ranger-glow);
+    letter-spacing: 2px;
 }
-
 .home-content p {
     font-size: 1.2rem;
-    margin-bottom: 2rem;
-    color: #ccc;
+    margin-bottom: 2.5rem;
+    color: var(--black-ranger-silver);
+    /* max-width: 600px; */ /* Removed for a fuller look */
+    line-height: 1.6;
+}
+
+.home-content button {
+    background-color: transparent;
+    color: var(--black-ranger-white);
+    border: 2px solid var(--black-ranger-silver);
+    padding: 14px 28px;
+    border-radius: 50px; /* Smooth, pill-shaped button */
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.3s ease-in-out;
+    letter-spacing: 0.5px;
+}
+
+.home-content button:hover {
+    background-color: var(--black-ranger-white);
+    color: var(--black-ranger-black);
+    border-color: var(--black-ranger-white);
+    box-shadow: 0 0 25px var(--black-ranger-white);
+    transform: translateY(-3px);
 }

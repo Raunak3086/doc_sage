@@ -1,74 +1,99 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import DocumentUploadModal from '../components/DocumentUploadModal';
+import DocumentUpload from './DocumentUpload';
 import './Interact.css';
 
 function Interact() {
   const location = useLocation();
-  const [uploadedFile, setUploadedFile] = useState(null);
-  const [summary, setSummary] = useState('');
-  const [query, setQuery] = useState('');
-  const [answer, setAnswer] = useState('');
+  const [documents, setDocuments] = useState([]);
+  const [activeDocumentId, setActiveDocumentId] = useState(null);
+  const [showUploadModal, setShowUploadModal] = useState(false);
 
   useEffect(() => {
     if (location.state && location.state.uploadedFile) {
-      setUploadedFile(location.state.uploadedFile);
+      const initialDoc = {
+        id: Date.now(),
+        name: location.state.uploadedFile.name,
+        summary: '',
+        queries: [],
+      };
+      setDocuments([initialDoc]);
+      setActiveDocumentId(initialDoc.id);
     }
   }, [location.state]);
+  
+  const getActiveDocument = () => documents.find(doc => doc.id === activeDocumentId);
 
   const handleSummarize = () => {
-    if (uploadedFile) {
-      console.log(`Summarizing ${uploadedFile.name}`);
-      setSummary(`This is a placeholder summary for the document: ${uploadedFile.name}.`);
+    const activeDoc = getActiveDocument();
+    if (activeDoc) {
+      console.log(`Summarizing ${activeDoc.name}`);
+      const updatedDocuments = documents.map(doc =>
+        doc.id === activeDocumentId
+          ? { ...doc, summary: `This is a placeholder summary for ${activeDoc.name}.` }
+          : doc
+      );
+      setDocuments(updatedDocuments);
     }
   };
+  
+  const openUploadModal = () => setShowUploadModal(true);
+  const closeUploadModal = () => setShowUploadModal(false);
 
-  const handleQuery = () => {
-    if (query) {
-      console.log(`Querying with: "${query}"`);
-      setAnswer(`This is a placeholder answer for your question: "${query}".`);
-    }
+  const handleNewDocument = (newFile) => {
+    const newDoc = {
+      id: Date.now(),
+      name: newFile.name,
+      summary: '',
+      queries: [],
+    };
+    setDocuments([...documents, newDoc]);
+    setActiveDocumentId(newDoc.id);
+    closeUploadModal();
   };
-
-  if (!uploadedFile) {
-    return (
-      <div className="interact-container">
-        <h1>No Document Found</h1>
-        <p>Please go back to the home page and upload a document first.</p>
-      </div>
-    );
-  }
 
   return (
     <div className="interact-container">
-      <h1>Interacting with: {uploadedFile.name}</h1>
-      
-      <div className="section">
-        <h2>1. Summarize</h2>
-        <button onClick={handleSummarize}>
-          Summarize
-        </button>
-        {summary && (
-          <div className="result-area summary-result">{summary}</div>
+      <div className="tab-navbar">
+        {documents.map(doc => (
+          <button
+            key={doc.id}
+            className={`tab ${doc.id === activeDocumentId ? 'active' : ''}`}
+            onClick={() => setActiveDocumentId(doc.id)}
+          >
+            {doc.name}
+          </button>
+        ))}
+        <button className="add-doc-button" onClick={openUploadModal}>+</button>
+      </div>
+
+      <div className="content-area">
+        {getActiveDocument() ? (
+          <div>
+            <h1>Interacting with: {getActiveDocument().name}</h1>
+            <div className="section">
+              <h2>1. Summarize</h2>
+              <button onClick={handleSummarize}>Summarize</button>
+              {getActiveDocument().summary && (
+                <div className="result-area summary-result">
+                  {getActiveDocument().summary}
+                </div>
+              )}
+            </div>
+          </div>
+        ) : (
+          <div className="no-document-message">
+            <h1>No document selected</h1>
+            <p>Please upload a document to begin.</p>
+          </div>
         )}
       </div>
 
-      {summary && (
-        <div className="section">
-          <h2>2. Query Document</h2>
-          <div className="query-box">
-            <input
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Ask a question about the document..."
-              className="query-input"
-            />
-            <button onClick={handleQuery} disabled={!query}>Ask</button>
-          </div>
-          {answer && (
-            <div className="result-area answer-result">{answer}</div>
-          )}
-        </div>
+      {showUploadModal && (
+        <DocumentUploadModal onClose={closeUploadModal}>
+          <DocumentUpload onUploadSuccess={handleNewDocument} />
+        </DocumentUploadModal>
       )}
     </div>
   );

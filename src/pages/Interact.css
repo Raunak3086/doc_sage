@@ -1,63 +1,180 @@
-/* Interact.css - Styles adapted from old Home.css */
+/* Black Power Ranger Theme Variables */
+:root {
+    --black-ranger-black: #0d0d0d;
+    --black-ranger-dark-grey: #1a1a1a;
+    --black-ranger-medium-grey: #2a2a2a; /* Slightly lighter for differentiation */
+    --black-ranger-light-grey: #3a3a3a; /* Even lighter */
+    --black-ranger-silver: #c0c0c0;
+    --black-ranger-white: #f5f5f5;
+    --black-ranger-glow: rgba(220, 220, 220, 0.4);
+}
+
+/* Base Layout for Interact Page */
 .interact-container {
-    padding: 20px;
-    background: linear-gradient(to bottom, var(--yellow-ranger-dark-grey), var(--yellow-ranger-black));
+    display: flex;
+    flex-direction: column;
     min-height: 100vh;
+    background-color: var(--black-ranger-dark-grey); /* Base background */
+    color: var(--black-ranger-silver);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    box-sizing: border-box; /* Ensures padding/border doesn't cause overflow */
+}
+
+/* Tab Navbar - Sleek and Differentiated */
+.tab-navbar {
+    display: flex;
+    padding: 10px 20px;
+    background-color: var(--black-ranger-black);
+    border-bottom: 2px solid var(--black-ranger-medium-grey); /* Subtle separation */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5); /* Lifted effect */
+    flex-shrink: 0;
+}
+
+.tab {
+    padding: 10px 20px;
+    cursor: pointer;
+    border: none;
+    background-color: transparent;
+    color: var(--black-ranger-silver);
+    font-size: 1rem;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s ease-in-out;
+    margin-right: 5px; /* Spacing between tabs */
+}
+
+.tab:hover {
+    color: var(--black-ranger-white);
+    background-color: rgba(255, 255, 255, 0.05); /* Subtle hover */
+}
+
+.tab.active {
+    color: var(--black-ranger-white);
+    border-bottom: 3px solid var(--black-ranger-silver); /* Active tab highlight */
+    font-weight: bold;
+    background-color: var(--black-ranger-medium-grey); /* Differentiate active tab background */
+}
+
+.add-doc-button {
+    margin-left: auto; /* Push to the far right */
+    padding: 10px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    line-height: 1;
+    background-color: var(--black-ranger-dark-grey);
+    color: var(--black-ranger-white);
+    border: 2px solid var(--black-ranger-silver);
+    transition: all 0.2s ease-in-out;
+}
+
+.add-doc-button:hover {
+    background-color: var(--black-ranger-silver);
+    color: var(--black-ranger-black);
+    box-shadow: 0 0 10px var(--black-ranger-silver);
+    transform: scale(1.05);
+}
+
+/* Content Area - Differentiated Background */
+.content-area {
+    padding: 30px; /* Increased padding */
+    flex-grow: 1;
+    background-color: var(--black-ranger-dark-grey); /* Slightly darker than container base */
+}
+
+.no-document-message {
+    text-align: center;
+    padding-top: 50px;
+    color: var(--black-ranger-silver);
 }
 
 .interact-container h1 {
-    color: var(--yellow-ranger-yellow);
+    color: var(--black-ranger-white);
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 40px; /* More spacing */
+    font-size: 2.5rem;
+    text-shadow: 0 0 10px var(--black-ranger-glow);
 }
 
+/* Section Styling - "Slides" differentiation */
 .section {
-    max-width: 800px;
-    margin: 0 auto 30px auto;
-    padding: 20px;
-    background-color: rgba(0,0,0,0.2);
-    border: 1px dashed var(--yellow-ranger-medium-grey);
-    border-radius: 8px;
+    max-width: 900px; /* Wider content area */
+    margin: 0 auto 40px auto; /* More margin */
+    padding: 30px; /* Increased padding */
+    background-color: var(--black-ranger-medium-grey); /* Lighter background for the "slide" */
+    border: 1px solid var(--black-ranger-light-grey); /* Subtle border */
+    border-radius: 10px; /* Slightly rounded corners for smoothness */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4), inset 0 0 10px rgba(255, 255, 255, 0.05); /* Depth and subtle inner glow */
 }
 
 .section h2 {
-    color: var(--yellow-ranger-yellow);
+    color: var(--black-ranger-white);
     margin-top: 0;
-    margin-bottom: 20px;
-    border-bottom: 1px solid var(--yellow-ranger-yellow);
+    margin-bottom: 25px; /* More spacing */
+    border-bottom: 1px solid var(--black-ranger-light-grey);
     padding-bottom: 10px;
+    font-size: 1.8rem;
 }
+
+/* General Button Style (overrides default for content buttons) */
+.content-area button {
+    background-color: var(--black-ranger-dark-grey);
+    color: var(--black-ranger-white);
+    border: 2px solid var(--black-ranger-silver);
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.2s ease-in-out;
+}
+
+.content-area button:hover:not(:disabled) {
+    background-color: var(--black-ranger-silver);
+    color: var(--black-ranger-black);
+    box-shadow: 0 0 15px var(--black-ranger-silver);
+    transform: translateY(-2px);
+}
+
+.content-area button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    border-color: var(--black-ranger-light-grey);
+    box-shadow: none;
+}
+
 
 /* Query Section */
 .query-box {
     display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
+    gap: 15px; /* More spacing */
+    margin-bottom: 25px; /* More spacing */
 }
 
 .query-input {
     flex-grow: 1;
-    padding: 10px;
-    border: 1px solid var(--yellow-ranger-yellow);
-    background-color: var(--yellow-ranger-dark-grey);
-    color: var(--yellow-ranger-yellow);
+    padding: 12px; /* Increased padding */
+    border: 1px solid var(--black-ranger-silver);
+    background-color: var(--black-ranger-dark-grey);
+    color: var(--black-ranger-white);
     border-radius: 5px;
     font-size: 1rem;
-    box-shadow: inset 0 0 8px rgba(255, 215, 0, 0.3);
+    box-shadow: inset 0 0 8px rgba(255, 255, 255, 0.1);
 }
 
 .query-input::placeholder {
-    color: var(--yellow-ranger-light-grey);
+    color: var(--black-ranger-silver);
 }
 
 /* Result Areas */
 .result-area {
-    margin-top: 20px;
-    padding: 15px;
-    background-color: #111;
-    border-left: 4px solid var(--yellow-ranger-yellow);
-    border-radius: 4px;
-    color: #e0e0e0;
-    line-height: 1.6;
+    margin-top: 25px; /* More spacing */
+    padding: 20px; /* Increased padding */
+    background-color: var(--black-ranger-black); /* Darker background */
+    border-left: 5px solid var(--black-ranger-silver); /* Prominent border */
+    border-radius: 5px;
+    color: var(--black-ranger-white);
+    line-height: 1.7;
     white-space: pre-wrap;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3); /* Subtle shadow */
 }
