@@ -1,100 +1,109 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-import DocumentUploadModal from '../components/DocumentUploadModal';
-import DocumentUpload from './DocumentUpload';
+import { useLocation, Link } from 'react-router-dom';
 import './Interact.css';
 
 function Interact() {
   const location = useLocation();
-  const [documents, setDocuments] = useState([]);
-  const [activeDocumentId, setActiveDocumentId] = useState(null);
-  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [docId, setDocId] = useState(null);
+  const [docName, setDocName] = useState('');
+  
+  const [summary, setSummary] = useState('');
+  const [question, setQuestion] = useState('');
+  const [answer, setAnswer] = useState('');
+
+  const [isLoadingSummarize, setIsLoadingSummarize] = useState(false);
+  const [isLoadingQuery, setIsLoadingQuery] = useState(false);
 
   useEffect(() => {
-    if (location.state && location.state.uploadedFile) {
-      const initialDoc = {
-        id: Date.now(),
-        name: location.state.uploadedFile.name,
-        summary: '',
-        queries: [],
-      };
-      setDocuments([initialDoc]);
-      setActiveDocumentId(initialDoc.id);
+    if (location.state) {
+      setDocId(location.state.docId);
+      setDocName(location.state.docName);
     }
   }, [location.state]);
-  
-  const getActiveDocument = () => documents.find(doc => doc.id === activeDocumentId);
 
+  // Simulated API call for summarize
   const handleSummarize = () => {
-    const activeDoc = getActiveDocument();
-    if (activeDoc) {
-      console.log(`Summarizing ${activeDoc.name}`);
-      const updatedDocuments = documents.map(doc =>
-        doc.id === activeDocumentId
-          ? { ...doc, summary: `This is a placeholder summary for ${activeDoc.name}.` }
-          : doc
-      );
-      setDocuments(updatedDocuments);
-    }
+    setIsLoadingSummarize(true);
+    setSummary('');
+    console.log('Requesting summary for docId:', docId);
+    
+    // This simulates a POST request to /summarize
+    setTimeout(() => {
+      const result = `This is a simulated summary for the document "${docName}". The backend would process docId: ${docId}.`;
+      setSummary(result);
+      setIsLoadingSummarize(false);
+      console.log('Summary received.');
+    }, 2000); // Simulate 2-second delay
   };
-  
-  const openUploadModal = () => setShowUploadModal(true);
-  const closeUploadModal = () => setShowUploadModal(false);
 
-  const handleNewDocument = (newFile) => {
-    const newDoc = {
-      id: Date.now(),
-      name: newFile.name,
-      summary: '',
-      queries: [],
-    };
-    setDocuments([...documents, newDoc]);
-    setActiveDocumentId(newDoc.id);
-    closeUploadModal();
+  // Simulated API call for query
+  const handleQuery = () => {
+    if (!question.trim()) return;
+    setIsLoadingQuery(true);
+    setAnswer('');
+    console.log(`Querying docId ${docId} with question: "${question}"`);
+
+    // This simulates a POST request to /query
+    setTimeout(() => {
+      const result = `This is a simulated answer to your question: "${question}". The backend would process docId: ${docId}.`;
+      setAnswer(result);
+      setIsLoadingQuery(false);
+      console.log('Answer received.');
+    }, 2000); // Simulate 2-second delay
   };
+
+  if (!docId) {
+    return (
+      <div className="interact-container interact-centered">
+        <h1>No Document Found</h1>
+        <p>Please upload a document first.</p>
+        <Link to="/">Go to Upload</Link>
+      </div>
+    );
+  }
 
   return (
     <div className="interact-container">
-      <div className="tab-navbar">
-        {documents.map(doc => (
-          <button
-            key={doc.id}
-            className={`tab ${doc.id === activeDocumentId ? 'active' : ''}`}
-            onClick={() => setActiveDocumentId(doc.id)}
-          >
-            {doc.name}
+      <h1></h1>
+
+      <div className="sections-wrapper"> {/* New wrapper for horizontal layout */}
+        {/* --- Summarize Section --- */}
+        <div className="section">
+          <h2>SUMMARY</h2>
+          <button onClick={handleSummarize} disabled={isLoadingSummarize}>
+            {isLoadingSummarize ? 'Summarizing...' : 'Summarize'}
           </button>
-        ))}
-        <button className="add-doc-button" onClick={openUploadModal}>+</button>
-      </div>
+          <textarea
+            readOnly
+            value={summary}
+            placeholder="Summary will appear here..."
+            rows="8"
+          />
+        </div>
 
-      <div className="content-area">
-        {getActiveDocument() ? (
-          <div>
-            <h1>Interacting with: {getActiveDocument().name}</h1>
-            <div className="section">
-              <h2>1. Summarize</h2>
-              <button onClick={handleSummarize}>Summarize</button>
-              {getActiveDocument().summary && (
-                <div className="result-area summary-result">
-                  {getActiveDocument().summary}
-                </div>
-              )}
-            </div>
+        {/* --- Query Section --- */}
+        <div className="section">
+          <h2>ASK QUERY</h2>
+          <div className="query-box">
+            <input
+              type="text"
+              value={question}
+              onChange={(e) => setQuestion(e.target.value)}
+              placeholder="Ask a question about the document..."
+              disabled={isLoadingQuery}
+            />
+            <button onClick={handleQuery} disabled={!question || isLoadingQuery}>
+              {isLoadingQuery ? 'Asking...' : 'Ask'}
+            </button>
           </div>
-        ) : (
-          <div className="no-document-message">
-            <h1>No document selected</h1>
-            <p>Please upload a document to begin.</p>
-          </div>
-        )}
+          <textarea
+            readOnly
+            value={answer}
+            placeholder="Answer will appear here..."
+            rows="8"
+          />
+        </div>
       </div>
-
-      {showUploadModal && (
-        <DocumentUploadModal onClose={closeUploadModal}>
-          <DocumentUpload onUploadSuccess={handleNewDocument} />
-        </DocumentUploadModal>
-      )}
     </div>
   );
 }

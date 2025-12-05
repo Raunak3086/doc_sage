@@ -1,180 +1,114 @@
-/* Black Power Ranger Theme Variables */
+/* Light Black and Dark Black Easy UI Theme */
 :root {
-    --black-ranger-black: #0d0d0d;
-    --black-ranger-dark-grey: #1a1a1a;
-    --black-ranger-medium-grey: #2a2a2a; /* Slightly lighter for differentiation */
-    --black-ranger-light-grey: #3a3a3a; /* Even lighter */
-    --black-ranger-silver: #c0c0c0;
-    --black-ranger-white: #f5f5f5;
-    --black-ranger-glow: rgba(220, 220, 220, 0.4);
+    --dark-black: #121212;
+    --light-black: #1e1e1e;
+    --text-primary: #e0e0e0;
+    --text-secondary: #a0a0a0;
+    --border-color: #333333;
+    --accent-color: #4a90e2; /* A subtle blue for accents */
 }
 
-/* Base Layout for Interact Page */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background-color: var(--dark-black);
+    color: var(--text-primary);
+    margin: 0;
+}
+
 .interact-container {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    background-color: var(--black-ranger-dark-grey); /* Base background */
-    color: var(--black-ranger-silver);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    box-sizing: border-box; /* Ensures padding/border doesn't cause overflow */
-}
-
-/* Tab Navbar - Sleek and Differentiated */
-.tab-navbar {
-    display: flex;
-    padding: 10px 20px;
-    background-color: var(--black-ranger-black);
-    border-bottom: 2px solid var(--black-ranger-medium-grey); /* Subtle separation */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5); /* Lifted effect */
-    flex-shrink: 0;
-}
-
-.tab {
-    padding: 10px 20px;
-    cursor: pointer;
-    border: none;
-    background-color: transparent;
-    color: var(--black-ranger-silver);
-    font-size: 1rem;
-    border-bottom: 3px solid transparent;
-    transition: all 0.2s ease-in-out;
-    margin-right: 5px; /* Spacing between tabs */
-}
-
-.tab:hover {
-    color: var(--black-ranger-white);
-    background-color: rgba(255, 255, 255, 0.05); /* Subtle hover */
-}
-
-.tab.active {
-    color: var(--black-ranger-white);
-    border-bottom: 3px solid var(--black-ranger-silver); /* Active tab highlight */
-    font-weight: bold;
-    background-color: var(--black-ranger-medium-grey); /* Differentiate active tab background */
-}
-
-.add-doc-button {
-    margin-left: auto; /* Push to the far right */
-    padding: 10px;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    font-size: 1.5rem;
-    line-height: 1;
-    background-color: var(--black-ranger-dark-grey);
-    color: var(--black-ranger-white);
-    border: 2px solid var(--black-ranger-silver);
-    transition: all 0.2s ease-in-out;
-}
-
-.add-doc-button:hover {
-    background-color: var(--black-ranger-silver);
-    color: var(--black-ranger-black);
-    box-shadow: 0 0 10px var(--black-ranger-silver);
-    transform: scale(1.05);
-}
-
-/* Content Area - Differentiated Background */
-.content-area {
-    padding: 30px; /* Increased padding */
-    flex-grow: 1;
-    background-color: var(--black-ranger-dark-grey); /* Slightly darker than container base */
-}
-
-.no-document-message {
-    text-align: center;
-    padding-top: 50px;
-    color: var(--black-ranger-silver);
+    max-width: 1800px; /* Wider container */
+    margin: 40px auto;
+    padding: 0 40px; /* More horizontal padding */
 }
 
 .interact-container h1 {
-    color: var(--black-ranger-white);
+    font-size: 2.5rem; /* Bigger title */
     text-align: center;
-    margin-bottom: 40px; /* More spacing */
-    font-size: 2.5rem;
-    text-shadow: 0 0 10px var(--black-ranger-glow);
+    margin-bottom: 2rem;
+    color: var(--text-primary);
 }
 
-/* Section Styling - "Slides" differentiation */
+.interact-centered {
+    text-align: center;
+}
+
+.sections-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: stretch; /* Makes sections equal height */
+    gap: 30px;
+}
+
 .section {
-    max-width: 900px; /* Wider content area */
-    margin: 0 auto 40px auto; /* More margin */
-    padding: 30px; /* Increased padding */
-    background-color: var(--black-ranger-medium-grey); /* Lighter background for the "slide" */
-    border: 1px solid var(--black-ranger-light-grey); /* Subtle border */
-    border-radius: 10px; /* Slightly rounded corners for smoothness */
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4), inset 0 0 10px rgba(255, 255, 255, 0.05); /* Depth and subtle inner glow */
+    background-color: var(--light-black);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 30px; /* Bigger padding */
+    margin-bottom: 20px;
+    flex: 1;
+    max-width: 700px; /* Wider section */
+    display: flex;
+    flex-direction: column;
 }
 
 .section h2 {
-    color: var(--black-ranger-white);
+    font-size: 1.4rem; /* Bigger section title */
     margin-top: 0;
-    margin-bottom: 25px; /* More spacing */
-    border-bottom: 1px solid var(--black-ranger-light-grey);
-    padding-bottom: 10px;
-    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 1rem;
 }
 
-/* General Button Style (overrides default for content buttons) */
-.content-area button {
-    background-color: var(--black-ranger-dark-grey);
-    color: var(--black-ranger-white);
-    border: 2px solid var(--black-ranger-silver);
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 1rem;
-    transition: all 0.2s ease-in-out;
-}
-
-.content-area button:hover:not(:disabled) {
-    background-color: var(--black-ranger-silver);
-    color: var(--black-ranger-black);
-    box-shadow: 0 0 15px var(--black-ranger-silver);
-    transform: translateY(-2px);
-}
-
-.content-area button:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-    border-color: var(--black-ranger-light-grey);
-    box-shadow: none;
-}
-
-
-/* Query Section */
 .query-box {
     display: flex;
-    gap: 15px; /* More spacing */
-    margin-bottom: 25px; /* More spacing */
+    gap: 10px;
+    margin-bottom: 15px; /* More space */
 }
 
-.query-input {
-    flex-grow: 1;
-    padding: 12px; /* Increased padding */
-    border: 1px solid var(--black-ranger-silver);
-    background-color: var(--black-ranger-dark-grey);
-    color: var(--black-ranger-white);
-    border-radius: 5px;
+input[type="text"],
+textarea {
+    width: 100%;
+    padding: 12px 14px; /* Bigger padding */
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
     font-size: 1rem;
-    box-shadow: inset 0 0 8px rgba(255, 255, 255, 0.1);
+    background-color: var(--dark-black);
+    color: var(--text-primary);
+    box-sizing: border-box;
 }
 
-.query-input::placeholder {
-    color: var(--black-ranger-silver);
+input[type="text"]:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--accent-color);
 }
 
-/* Result Areas */
-.result-area {
-    margin-top: 25px; /* More spacing */
-    padding: 20px; /* Increased padding */
-    background-color: var(--black-ranger-black); /* Darker background */
-    border-left: 5px solid var(--black-ranger-silver); /* Prominent border */
-    border-radius: 5px;
-    color: var(--black-ranger-white);
-    line-height: 1.7;
-    white-space: pre-wrap;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3); /* Subtle shadow */
+textarea {
+    min-height: 250px; /* Taller textarea */
+    resize: vertical;
+    flex-grow: 1; /* Allow textarea to fill space */
+}
+
+button {
+    background-color: grey;
+    border-width: thick;
+    border-color: white;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px; /* Slightly larger radius */
+    padding: 12px 20px; /* Bigger padding */
+    font-size: 1.1rem; /* Bigger font */
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+}
+
+button:hover {
+    background-color: lightblue;
+}
+
+button:disabled {
+    background-color: #555;
+    color: #888;
+    cursor: not-allowed;
 }
