@@ -1,20 +1,16 @@
 
-import OpenAI from 'openai';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import dotenv from 'dotenv';
 dotenv.config();
 
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-});
-
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 
 async function embedText(text) {
     try {
-        const response = await openai.embeddings.create({
-            model: "text-embedding-ada-002",
-            input: text,
-        });
-        return response.data[0].embedding;
+        const model = genAI.getGenerativeModel({ model: "embedding-001"});
+        const result = await model.embedContent(text);
+        const embedding = result.embedding;
+        return embedding.values;
     } catch (error) {
         console.error('Error embedding text:', error);
         throw error;
@@ -22,3 +18,4 @@ async function embedText(text) {
 }
 
 export { embedText };
+
