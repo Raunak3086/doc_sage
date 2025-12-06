@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, Link } from 'react-router-dom';
+import axios from 'axios'; // Import Axios
 import './Interact.css';
 
 function Interact() {
@@ -21,7 +22,7 @@ function Interact() {
     }
   }, [location.state]);
 
-  // Simulated API call for summarize
+  // Axios API call for summarize
   const handleSummarize = async () => {
     if (!docId) {
       setSummary('No document ID available to summarize.');
@@ -33,9 +34,9 @@ function Interact() {
     console.log('Requesting summary for docId:', docId);
     
     try {
-      const response = await axios.get(`http://localhost:5000/api/summary/${docId}`);
-      console.log(response.data.summary);
+      const response = await axios.get(`http://localhost:5000/api/summary/${docId}`); // Changed to GET
       setSummary(response.data.summary);
+      console.log('Summary received:', response.data.summary); // Updated console log
     } catch (error) {
       console.error('Error fetching summary:', error);
       setSummary('Failed to fetch summary. Please try again.');
@@ -45,19 +46,23 @@ function Interact() {
   };
 
   // Simulated API call for query
-  const handleQuery = () => {
+  const handleQuery = async () => {
     if (!question.trim()) return;
     setIsLoadingQuery(true);
     setAnswer('');
     console.log(`Querying docId ${docId} with question: "${question}"`);
 
-    // This simulates a POST request to /query
-    setTimeout(() => {
-      const result = `This is a simulated answer to your question: "${question}". The backend would process docId: ${docId}.`;
-      setAnswer(result);
+    try {
+      const response = await axios.post('http://localhost:5000/api/query', { docId, question });
+      setAnswer(response.data.answer);
+      setQuestion(''); // Clear question input
+      console.log('Answer received:', response.data.answer);
+    } catch (error) {
+      console.error('Error fetching answer:', error);
+      setAnswer('Failed to get answer. Please try again.');
+    } finally {
       setIsLoadingQuery(false);
-      console.log('Answer received.');
-    }, 2000); // Simulate 2-second delay
+    }
   };
 
   if (!docId) {
