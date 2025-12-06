@@ -22,18 +22,26 @@ function Interact() {
   }, [location.state]);
 
   // Simulated API call for summarize
-  const handleSummarize = () => {
+  const handleSummarize = async () => {
+    if (!docId) {
+      setSummary('No document ID available to summarize.');
+      return;
+    }
+
     setIsLoadingSummarize(true);
     setSummary('');
     console.log('Requesting summary for docId:', docId);
     
-    // This simulates a POST request to /summarize
-    setTimeout(() => {
-      const result = `This is a simulated summary for the document "${docName}". The backend would process docId: ${docId}.`;
-      setSummary(result);
+    try {
+      const response = await axios.get(`http://localhost:5000/api/summary/${docId}`);
+      console.log(response.data.summary);
+      setSummary(response.data.summary);
+    } catch (error) {
+      console.error('Error fetching summary:', error);
+      setSummary('Failed to fetch summary. Please try again.');
+    } finally {
       setIsLoadingSummarize(false);
-      console.log('Summary received.');
-    }, 2000); // Simulate 2-second delay
+    }
   };
 
   // Simulated API call for query
