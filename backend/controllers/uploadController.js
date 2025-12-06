@@ -30,6 +30,8 @@ const chunkText = (text, chunkSize) => {
     return chunks;
 };
 
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 const uploadController = async (req, res) => {
     try {
         if (!req.file) return res.status(400).send("No file uploaded.");
@@ -50,12 +52,16 @@ const uploadController = async (req, res) => {
         const chunks = chunkText(text, 1000);
 
         for (const chunk of chunks) {
+            console.log(chunk);
             const embedding = await embedText(chunk);
+            const formattedEmbedding = JSON.stringify(embedding);
+            console.log(formattedEmbedding);
 
             await pool.query(
                 "INSERT INTO chunks (doc_id, content, embedding) VALUES ($1, $2, $3)",
-                [docId, chunk, embedding]
+                [docId, chunk, formattedEmbedding]
             );
+            await sleep(1000); // Wait for 1 second
         }
 
         res.status(200).send({ message: "File uploaded and processed successfully.", docId });
