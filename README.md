@@ -9,10 +9,10 @@ Currently, two official plugins are available:
 
 ## Team Members
 
-1. Deep Raunak(20243086)
-2. Dhruv Sahran(20243517)
-3. Satyam Kumar(20246129)
-4. Sahil Rawat(20246124)
+1. Deep Raunak (20243086) https://github.com/Raunak3086
+2. Dhruv Sahran (20243517) https://github.com/Colablast
+3. Satyam Kumar (20246129) https://github.com/Satyam-pthk
+4. Sahil Rawat (20246124) https://github.com/sah99il
 
 ## Expanding the ESLint configuration
 
