@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import SkeletonLoader from './SkeletonLoader';
+import ContextMenu from './ContextMenu';
 import './DocumentSideMenu.css';
 
 const DocumentSideMenu = ({
@@ -16,6 +17,12 @@ const DocumentSideMenu = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [renamingId, setRenamingId] = useState(null);
   const [draftName, setDraftName] = useState('');
+  const [contextMenu, setContextMenu] = useState({
+    visible: false,
+    x: 0,
+    y: 0,
+    doc: null,
+  });
 
   const toggleCollapse = () => {
     setIsCollapsed(!isCollapsed);
@@ -25,15 +32,13 @@ const DocumentSideMenu = ({
     doc.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleDelete = (e, docId) => {
-    e.stopPropagation();
+  const handleDelete = (docId) => {
     if (window.confirm('Are you sure you want to delete this document?')) {
       onDocumentDelete(docId);
     }
   };
 
-  const handleRenameClick = (e, doc) => {
-    e.stopPropagation();
+  const handleRenameClick = (doc) => {
     setRenamingId(doc.id);
     setDraftName(doc.name);
   };
@@ -51,8 +56,32 @@ const DocumentSideMenu = ({
     setRenamingId(null);
   };
 
+  const handleContextMenu = (e, doc) => {
+    e.preventDefault();
+    setContextMenu({
+      visible: true,
+      x: e.pageX,
+      y: e.pageY,
+      doc: doc,
+    });
+  };
+
+  const closeContextMenu = () => {
+    setContextMenu({ ...contextMenu, visible: false });
+  };
+
   return (
-    <div className={`document-side-menu ${isCollapsed ? 'collapsed' : ''}`}>
+    <div className={`document-side-menu ${isCollapsed ? 'collapsed' : ''}`} onClick={closeContextMenu}>
+      {contextMenu.visible && (
+        <ContextMenu
+          x={contextMenu.x}
+          y={contextMenu.y}
+          doc={contextMenu.doc}
+          onClose={closeContextMenu}
+          onRename={handleRenameClick}
+          onDelete={handleDelete}
+        />
+      )}
       <button onClick={toggleCollapse} className="collapse-btn">
         {isCollapsed ? '»' : '«'}
       </button>
@@ -84,6 +113,7 @@ const DocumentSideMenu = ({
                         key={doc.id}
                         className={`document-item ${doc.id === activeDocId ? 'active' : ''}`}
                         onClick={() => (renamingId !== doc.id ? onDocumentSelect(doc) : null)}
+                        onContextMenu={(e) => handleContextMenu(e, doc)}
                       >
                         {renamingId === doc.id ? (
                           <div className="rename-container">
@@ -100,14 +130,6 @@ const DocumentSideMenu = ({
                         ) : (
                           <div className="document-info">
                             <span className="doc-name">{doc.name}</span>
-                            <div className="doc-actions">
-                              <button onClick={(e) => handleRenameClick(e, doc)} className="doc-action-btn">
-                                Rename
-                              </button>
-                              <button onClick={(e) => handleDelete(e, doc.id)} className="doc-action-btn delete">
-                                Delete
-                              </button>
-                            </div>
                           </div>
                         )}
                       </li>
