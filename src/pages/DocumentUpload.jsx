@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate } from 'react-router-dom';
 import './DocumentUpload.css';
 
 function DocumentUpload() {
   const [selectedFile, setSelectedFile] = useState(null);
-  const navigate = useNavigate(); // Initialize useNavigate
+  const [isLoading, setIsLoading] = useState(false); // Loading state for upload
+  const navigate = useNavigate();
 
   const handleFileChange = (event) => {
     setSelectedFile(event.target.files[0]);
@@ -12,13 +13,17 @@ function DocumentUpload() {
 
   const handleUpload = () => {
     if (selectedFile) {
+      setIsLoading(true);
       console.log('Uploading file:', selectedFile);
-      // Placeholder for actual upload logic
-      
-      // Navigate to the new page after "upload"
-      navigate('/interact', { state: { uploadedFile: selectedFile } });
-    } else {
-      console.log('No file selected');
+
+      // Simulate API call for upload
+      setTimeout(() => {
+        const simulatedDocId = `doc_${Date.now()}`; // Create a fake docId
+        console.log('Upload complete. Doc ID:', simulatedDocId);
+        setIsLoading(false);
+        // Navigate to interact page with the new docId
+        navigate('/interact', { state: { docId: simulatedDocId, docName: selectedFile.name } });
+      }, 2000); // Simulate 2-second upload
     }
   };
 
@@ -27,7 +32,9 @@ function DocumentUpload() {
       <h1>Document Upload</h1>
       <p>Select a file to begin.</p>
       <input type="file" onChange={handleFileChange} />
-      <button onClick={handleUpload} disabled={!selectedFile}>Upload</button>
+      <button onClick={handleUpload} disabled={!selectedFile || isLoading}>
+        {isLoading ? 'Uploading...' : 'Upload'}
+      </button>
     </div>
   );
 }

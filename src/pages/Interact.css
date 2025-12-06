@@ -1,63 +1,114 @@
-/* Interact.css - Styles adapted from old Home.css */
+/* Light Black and Dark Black Easy UI Theme */
+:root {
+    --dark-black: #121212;
+    --light-black: #1e1e1e;
+    --text-primary: #e0e0e0;
+    --text-secondary: #a0a0a0;
+    --border-color: #333333;
+    --accent-color: #4a90e2; /* A subtle blue for accents */
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background-color: var(--dark-black);
+    color: var(--text-primary);
+    margin: 0;
+}
+
 .interact-container {
-    padding: 20px;
-    background: linear-gradient(to bottom, var(--yellow-ranger-dark-grey), var(--yellow-ranger-black));
-    min-height: 100vh;
+    max-width: 1800px; /* Wider container */
+    margin: 40px auto;
+    padding: 0 40px; /* More horizontal padding */
 }
 
 .interact-container h1 {
-    color: var(--yellow-ranger-yellow);
+    font-size: 2.5rem; /* Bigger title */
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 2rem;
+    color: var(--text-primary);
+}
+
+.interact-centered {
+    text-align: center;
+}
+
+.sections-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: stretch; /* Makes sections equal height */
+    gap: 30px;
 }
 
 .section {
-    max-width: 800px;
-    margin: 0 auto 30px auto;
-    padding: 20px;
-    background-color: rgba(0,0,0,0.2);
-    border: 1px dashed var(--yellow-ranger-medium-grey);
+    background-color: var(--light-black);
+    border: 1px solid var(--border-color);
     border-radius: 8px;
+    padding: 30px; /* Bigger padding */
+    margin-bottom: 20px;
+    flex: 1;
+    max-width: 700px; /* Wider section */
+    display: flex;
+    flex-direction: column;
 }
 
 .section h2 {
-    color: var(--yellow-ranger-yellow);
+    font-size: 1.4rem; /* Bigger section title */
     margin-top: 0;
-    margin-bottom: 20px;
-    border-bottom: 1px solid var(--yellow-ranger-yellow);
-    padding-bottom: 10px;
+    margin-bottom: 1.5rem;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 1rem;
 }
 
-/* Query Section */
 .query-box {
     display: flex;
     gap: 10px;
-    margin-bottom: 20px;
+    margin-bottom: 15px; /* More space */
 }
 
-.query-input {
-    flex-grow: 1;
-    padding: 10px;
-    border: 1px solid var(--yellow-ranger-yellow);
-    background-color: var(--yellow-ranger-dark-grey);
-    color: var(--yellow-ranger-yellow);
-    border-radius: 5px;
-    font-size: 1rem;
-    box-shadow: inset 0 0 8px rgba(255, 215, 0, 0.3);
-}
-
-.query-input::placeholder {
-    color: var(--yellow-ranger-light-grey);
-}
-
-/* Result Areas */
-.result-area {
-    margin-top: 20px;
-    padding: 15px;
-    background-color: #111;
-    border-left: 4px solid var(--yellow-ranger-yellow);
+input[type="text"],
+textarea {
+    width: 100%;
+    padding: 12px 14px; /* Bigger padding */
+    border: 1px solid var(--border-color);
     border-radius: 4px;
-    color: #e0e0e0;
-    line-height: 1.6;
-    white-space: pre-wrap;
+    font-size: 1rem;
+    background-color: var(--dark-black);
+    color: var(--text-primary);
+    box-sizing: border-box;
+}
+
+input[type="text"]:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--accent-color);
+}
+
+textarea {
+    min-height: 250px; /* Taller textarea */
+    resize: vertical;
+    flex-grow: 1; /* Allow textarea to fill space */
+}
+
+button {
+    background-color: grey;
+    border-width: thick;
+    border-color: white;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px; /* Slightly larger radius */
+    padding: 12px 20px; /* Bigger padding */
+    font-size: 1.1rem; /* Bigger font */
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+}
+
+button:hover {
+    background-color: lightblue;
+}
+
+button:disabled {
+    background-color: #555;
+    color: #888;
+    cursor: not-allowed;
 }
