@@ -11,7 +11,19 @@ doc_sage is an online platform for data analysis.
 
 ## Tech Stack 
 
-Frontend: react.js vite
-Backend: nodejs
-Database: pg vector
-Additional Tools / APIs : open ai api , faiss
+- Frontend: react.js vite
+- Backend: nodejs
+- Database: pg vector
+- Additional Tools / APIs : open ai api , faiss
+
+## Contributing 
+
+Contributions to doc_sage are welcome! If you find any issues or have suggestions for improvements, please open an issue or submit a pull request on the GitHub repository.
+
+## Acknowledgments
+
+- React.js - The JavaScript library for building fast, interactive, and component-based user interfaces.
+- Node.js - The runtime environment that lets you run JavaScript on the server side for building scalable backend applications.
+- PG vector - The PostgreSQL extension that enables efficient storage and similarity search of vector embeddings for AI and ML applications.
+- OpenAI API - OpenAI API provides powerful AI models for text, images, and more through simple API calls.
+- Faiss - The library for fast similarity search and clustering of vectors.
