@@ -3,7 +3,7 @@ import DocumentUploadModal from '../components/DocumentUploadModal';
 import DocumentUpload from './DocumentUpload';
 import './Home.css';
 
-function Home() {
+function Home({ setDocs }) {
   const [showUploadModal, setShowUploadModal] = useState(false);
 
   const openUploadModal = () => setShowUploadModal(true);
@@ -19,7 +19,7 @@ function Home() {
 
       {showUploadModal && (
         <DocumentUploadModal onClose={closeUploadModal}>
-          <DocumentUpload />
+          <DocumentUpload setDocs={setDocs} />
         </DocumentUploadModal>
       )}
     </div>

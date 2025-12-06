@@ -5,54 +5,199 @@
     --text-primary: #e0e0e0;
     --text-secondary: #a0a0a0;
     --border-color: #333333;
-    --accent-color: #4a90e2; /* A subtle blue for accents */
+    --accent-color: #4a90e2;
+    /* A subtle blue for accents */
+    --error-color: #e57373;
+    /* Define an error color */
+
+    /* Sidebar widths (single source of truth for CSS below) */
+    --sidebar-desktop: 250px;
+    --sidebar-collapsed: 60px;
+    --sidebar-large-tablet: 230px;
+    --sidebar-tablet: 200px;
+    --sidebar-small-tablet: 170px;
+    --sidebar-mobile: 150px;
 }
 
+html,
+body {
+    height: 100%;
+    margin: 0;
+}
+
+/* -----------------------------
+   Sidebar (if present) — fixed
+   ----------------------------- */
+.document-side-menu {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: var(--sidebar-desktop);
+    min-width: var(--sidebar-desktop);
+    height: 100vh;
+    z-index: 100;
+    background-color: var(--light-black);
+    border-right: 1px solid var(--border-color);
+    box-sizing: border-box;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    transition: width 0.28s ease, padding 0.2s ease;
+}
+
+/* collapsed variant */
+.document-side-menu.collapsed {
+    width: var(--sidebar-collapsed);
+    min-width: var(--sidebar-collapsed);
+    padding: 10px;
+}
+
+/* hide heavy elements when collapsed (optional) */
+.document-side-menu.collapsed h2,
+.document-side-menu.collapsed .search-bar,
+.document-side-menu.collapsed .add-new-document-btn,
+.document-side-menu.collapsed .document-list ul {
+    display: none;
+}
+
+/* ============================
+   INTERACT CONTAINER / MAIN
+   ============================ */
+
+/* Allow the page (body) to scroll so scrollbar is at the screen edge */
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     background-color: var(--dark-black);
     color: var(--text-primary);
     margin: 0;
+    overflow: auto;
+    /* <-- changed: page scrolls, scrollbar at far right */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    box-sizing: border-box;
 }
 
+/* container that holds your main content (and other UI) */
 .interact-container {
-    max-width: 1800px; /* Wider container */
-    margin: 40px auto;
-    padding: 0 40px; /* More horizontal padding */
+    display: flex;
+    width: 100%;
+    /* don't force height here; let page height grow so body can scroll */
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
 }
 
-.interact-container h1 {
-    font-size: 2.5rem; /* Bigger title */
+/* MAIN CONTENT — fills the rest of the viewport horizontally */
+/* Make it let content grow vertically so body scrollbar appears */
+.main-content {
+    margin-left: var(--sidebar-desktop);
+    /* desktop sidebar offset */
+    width: calc(100% - var(--sidebar-desktop));
+    /* remaining width */
+    flex-grow: 1;
+    padding: 20px 40px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    /* fill viewport initially, but allow to grow */
+    /* remove inner scrolling so the page scrolls */
+    overflow: visible;
+    box-sizing: border-box;
+    transition: margin-left 0.28s ease, width 0.28s ease;
+}
+
+/* When sidebar is collapsed — expand main-content (works if sidebar is sibling before .interact-container) */
+.document-side-menu.collapsed~.interact-container .main-content,
+.document-side-menu.collapsed~.main-content {
+    margin-left: var(--sidebar-collapsed);
+    width: calc(100% - var(--sidebar-collapsed));
+}
+
+/* --------------------
+   Typography & layout
+   -------------------- */
+
+/* Keep your large main title in main content */
+.main-content h1 {
+    font-size: 3.5rem;
+    /* Even Bigger title */
     text-align: center;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
     color: var(--text-primary);
 }
 
+/* center wrapper inside main-content */
 .interact-centered {
     text-align: center;
+    justify-content: center;
+    /* let it expand naturally */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
 }
 
+.interact-centered p {
+    font-size: 1.3rem;
+    color: var(--text-secondary);
+    margin-top: 0.5rem;
+    max-width: 600px;
+    line-height: 1.5;
+}
+
+/* document view area */
+.document-view {
+    background-color: var(--light-black);
+    border: 1px solid var(--border-color);
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    min-height: 200px;
+    /* let document view grow; don't limit height to force inner scrolling */
+    max-height: none;
+    overflow-y: visible;
+    color: var(--text-primary);
+    white-space: pre-wrap;
+}
+
+/* messages */
+.loading-message {
+    text-align: center;
+    color: var(--text-secondary);
+    font-style: italic;
+    font-size: 1.2rem;
+}
+
+.error-message {
+    text-align: center;
+    color: var(--error-color);
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+/* sections */
 .sections-wrapper {
     display: flex;
     justify-content: center;
-    align-items: stretch; /* Makes sections equal height */
+    align-items: stretch;
     gap: 30px;
+    width: 100%;
 }
 
 .section {
     background-color: var(--light-black);
     border: 1px solid var(--border-color);
     border-radius: 8px;
-    padding: 30px; /* Bigger padding */
+    padding: 30px;
     margin-bottom: 20px;
     flex: 1;
-    max-width: 700px; /* Wider section */
     display: flex;
     flex-direction: column;
 }
 
 .section h2 {
-    font-size: 1.4rem; /* Bigger section title */
+    font-size: 1.4rem;
     margin-top: 0;
     margin-bottom: 1.5rem;
     color: var(--text-primary);
@@ -60,16 +205,17 @@ body {
     padding-bottom: 1rem;
 }
 
+/* form fields */
 .query-box {
     display: flex;
     gap: 10px;
-    margin-bottom: 15px; /* More space */
+    margin-bottom: 15px;
 }
 
 input[type="text"],
 textarea {
     width: 100%;
-    padding: 12px 14px; /* Bigger padding */
+    padding: 12px 14px;
     border: 1px solid var(--border-color);
     border-radius: 4px;
     font-size: 1rem;
@@ -85,20 +231,21 @@ textarea:focus {
 }
 
 textarea {
-    min-height: 250px; /* Taller textarea */
+    min-height: 250px;
     resize: vertical;
-    flex-grow: 1; /* Allow textarea to fill space */
+    flex-grow: 1;
 }
 
+/* buttons */
 button {
     background-color: grey;
     border-width: thick;
     border-color: white;
     color: #ffffff;
     border: none;
-    border-radius: 5px; /* Slightly larger radius */
-    padding: 12px 20px; /* Bigger padding */
-    font-size: 1.1rem; /* Bigger font */
+    border-radius: 5px;
+    padding: 12px 20px;
+    font-size: 1.1rem;
     cursor: pointer;
     transition: background-color 0.2s ease-in-out;
 }
@@ -111,4 +258,80 @@ button:disabled {
     background-color: #555;
     color: #888;
     cursor: not-allowed;
+}
+
+/* skeletons and placeholders */
+.h1-skeleton {
+    height: 2.5rem;
+    width: 60%;
+    margin: 0 auto 2rem auto;
+}
+
+.doc-view-skeleton {
+    min-height: 200px;
+    margin-bottom: 20px;
+}
+
+.section-skeleton {
+    flex: 1;
+    width: 100%;
+    min-height: 350px;
+}
+
+/* -------------------------
+   RESPONSIVE ADJUSTMENTS
+   ------------------------- */
+
+/* large desktops -> slightly smaller sidebar */
+@media (max-width: 1200px) {
+    :root {
+        --sidebar-desktop: var(--sidebar-large-tablet);
+    }
+
+    .main-content {
+        margin-left: var(--sidebar-large-tablet);
+        width: calc(100% - var(--sidebar-large-tablet));
+    }
+}
+
+/* tablets */
+@media (max-width: 1024px) {
+    :root {
+        --sidebar-desktop: var(--sidebar-tablet);
+    }
+
+    .main-content {
+        margin-left: var(--sidebar-tablet);
+        width: calc(100% - var(--sidebar-tablet));
+    }
+}
+
+/* small tablets / large phones */
+@media (max-width: 768px) {
+    :root {
+        --sidebar-desktop: var(--sidebar-small-tablet);
+    }
+
+    .main-content {
+        margin-left: var(--sidebar-small-tablet);
+        width: calc(100% - var(--sidebar-small-tablet));
+        padding: 16px;
+    }
+}
+
+/* mobile phones */
+@media (max-width: 480px) {
+    :root {
+        --sidebar-desktop: var(--sidebar-mobile);
+    }
+
+    .main-content {
+        margin-left: var(--sidebar-mobile);
+        width: calc(100% - var(--sidebar-mobile));
+        padding: 12px;
+    }
+
+    .main-content h1 {
+        font-size: 2.2rem;
+    }
 }

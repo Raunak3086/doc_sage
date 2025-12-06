@@ -1,0 +1,192 @@
+.document-side-menu {
+  display: flex;
+  flex-direction: column;
+  width: 250px;
+  background-color: var(--light-black);
+  border-right: 1px solid var(--border-color);
+  height: 100vh;
+  position: relative;
+  transition: width 0.3s ease;
+  flex-shrink: 0;
+  box-sizing: border-box; /* Include padding in width */
+  padding: 20px;
+}
+
+.document-side-menu.collapsed {
+  width: 60px;
+  padding: 10px;
+}
+
+.document-side-menu.collapsed h2,
+.document-side-menu.collapsed .search-bar,
+.document-side-menu.collapsed .add-new-document-btn,
+.document-side-menu.collapsed .document-list ul {
+  display: none; /* Hide everything in the list when collapsed */
+}
+
+.collapse-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: transparent;
+  border: 1px solid var(--text-secondary);
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.document-list {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  min-height: 0; /* Important for flex-grow and scrolling */
+}
+
+.document-list-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  margin-top: 40px; /* To maintain spacing with the collapse button */
+  flex-shrink: 0;
+}
+
+.document-list h2 {
+  margin-top: 0;
+  font-size: 1.2em;
+}
+
+.search-bar {
+  width: 100%;
+  padding: 8px 10px;
+  margin-bottom: 15px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  font-size: 0.9rem;
+  background-color: var(--dark-black);
+  color: var(--text-primary);
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.skeleton-list .skeleton-loader {
+  height: 45px;
+  margin-bottom: 1px; /* Simulates the border */
+  border-radius: 4px;
+}
+
+.document-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  overflow-y: auto;
+  flex-grow: 1;
+}
+
+.no-documents-message {
+  text-align: center;
+  color: var(--text-secondary);
+  padding: 20px;
+}
+
+.document-item {
+  display: flex;
+  flex-direction: column; /* Stack children vertically */
+  align-items: flex-start; /* Align content to the left */
+  padding: 10px 15px 5px 15px; /* Adjusted padding */
+  cursor: pointer;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  transition: background-color 0.2s;
+  min-height: 45px; /* Add min-height to prevent layout shift */
+}
+
+.document-item:hover {
+  background-color: var(--dark-black);
+}
+
+.document-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.document-item .doc-name {
+  flex-grow: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%; /* Take full width */
+  margin-bottom: 8px; /* Space between name and buttons */
+}
+
+.doc-actions {
+  display: flex; /* Always visible and side-by-side */
+  gap: 5px;
+  margin-bottom: 5px; /* Space below buttons */
+}
+
+.doc-action-btn {
+  background: transparent;
+  border: 1px solid var(--text-secondary);
+  color: var(--text-secondary);
+  padding: 2px 5px;
+  font-size: 0.7rem;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.doc-action-btn.delete {
+  color: #e57373;
+  border-color: #e57373;
+}
+
+.doc-action-btn.delete:hover {
+  background-color: #e57373;
+  color: white;
+}
+
+.document-item.active {
+  background-color: var(--accent-color);
+  color: var(--text-primary);
+  font-weight: bold;
+}
+
+.add-new-document-btn {
+  width: 100%;
+  padding: 10px;
+  background-color: var(--accent-color);
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 1em;
+  border-radius: 5px;
+  flex-shrink: 0; /* Prevent button from shrinking */
+  margin-top: 10px; /* Add space between list and button */
+}
+
+.add-new-document-btn:hover {
+  background-color: #3a7bc8;
+}
+
+/* ========== MAIN CONTENT EXPANDS FULL WIDTH (IMPORTANT) ========== */
+.main-content {
+  margin-left: 250px;
+  /* same as sidebar width */
+  width: calc(100% - 250px);
+  padding: 24px;
+  box-sizing: border-box;
+  transition: margin-left 0.3s ease, width 0.3s ease;
+}
+
+/* When sidebar collapses */
+.document-side-menu.collapsed~.main-content {
+  margin-left: 60px;
+  width: calc(100% - 60px);
+}
