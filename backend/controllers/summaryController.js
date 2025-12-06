@@ -1,11 +1,9 @@
 import { pool } from '../services/db.js';
-import OpenAI from 'openai';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import dotenv from 'dotenv';
 dotenv.config();
 
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-});
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 
 const getSummary = async (req, res) => {
     try {
@@ -27,21 +25,11 @@ const getSummary = async (req, res) => {
         }
 
         // If summary does not exist, generate it
-        const response = await openai.chat.completions.create({
-            model: "gpt-3.5-turbo",
-            messages: [
-                {
-                    role: "system",
-                    content: "You are a helpful assistant that summarizes text."
-                },
-                {
-                    role: "user",
-                    content: `Summarize the following text:\n\n${text}`
-                }
-            ],
-        });
-
-        summary = response.choices[0].message.content;
+        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash"});
+        const prompt = `Summarize the following text:\n\n${text}`;
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        summary = response.text();
 
         // Save the summary to the database
         await pool.query('UPDATE documents SET summary = $1 WHERE id = $2', [summary, id]);
@@ -54,3 +42,6 @@ const getSummary = async (req, res) => {
 };
 
 export { getSummary };
+
+
+
