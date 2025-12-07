@@ -25,7 +25,7 @@ const getSummary = async (req, res) => {
         }
 
         // If summary does not exist, generate it
-        const model = genAI.getGenerativeModel({ model: "gemini-flash-latest"});
+        const model = genAI.getGenerativeModel({ model: "gemini-3-pro-preview"});
         const prompt = `Summarize the following text:\n\n${text}`;
         const result = await model.generateContent(prompt);
         const response = await result.response;

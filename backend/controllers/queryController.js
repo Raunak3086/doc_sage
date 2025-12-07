@@ -23,8 +23,8 @@ const askQuery = async (req, res) => {
         const text = docResult.rows[0].text;
 
         // Generate the answer using Gemini
-        const model = genAI.getGenerativeModel({ model: "gemini-flash-latest"});
-        const prompt = `Based on the following text, answer the question: "${question}"\n\nText:\n${text}`;
+        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash"});
+        const prompt = `think and answer this: "${question}"\n\nText:\n${text}`;
         
         const result = await model.generateContent(prompt);
         const response = await result.response;
