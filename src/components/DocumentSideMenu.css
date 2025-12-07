@@ -1,194 +1,112 @@
+/* DocumentSideMenu.css */
+
 .document-side-menu {
+  width: 300px;
+  background: rgba(var(--color-black-rgb), 0.5);
+  border-right: 1px solid rgba(var(--color-cyan-rgb), 0.2);
+  padding: var(--spacing-lg);
   display: flex;
   flex-direction: column;
-  width: 250px;
-  background-color: var(--light-black);
-  border-right: 1px solid var(--border-color);
-  height: 100vh;
-  position: relative;
-  transition: width 0.3s ease;
-  flex-shrink: 0;
-  box-sizing: border-box; /* Include padding in width */
-  padding: 20px;
+  backdrop-filter: blur(24px);
+  transition: width var(--timing-medium) var(--ease-in-out);
 }
 
 .document-side-menu.collapsed {
-  width: 60px;
-  padding: 10px;
-}
-
-.document-side-menu.collapsed h2,
-.document-side-menu.collapsed .search-bar,
-.document-side-menu.collapsed .add-new-document-btn,
-.document-side-menu.collapsed .document-list ul {
-  display: none; /* Hide everything in the list when collapsed */
-}
-
-.collapse-btn {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: transparent;
-  border: 1px solid var(--text-secondary);
-  color: var(--text-secondary);
-  cursor: pointer;
-  border-radius: 50%;
-  width: 30px;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 10;
-}
-
-.document-list {
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-  min-height: 0; /* Important for flex-grow and scrolling */
+  width: 80px;
 }
 
 .document-list-header {
-  display: flex;
-  align-items: center;
-  margin-bottom: 15px;
-  margin-top: 40px; /* To maintain spacing with the collapse button */
-  flex-shrink: 0;
+  margin-bottom: var(--spacing-lg);
 }
 
-.document-list h2 {
-  margin-top: 0;
-  font-size: 1.2em;
+.document-list-header__title {
+  font-size: 1.8rem;
+  color: var(--color-cyan);
 }
 
 .search-bar {
   width: 100%;
-  padding: 8px 10px;
-  margin-bottom: 15px;
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
-  font-size: 0.9rem;
-  background-color: var(--dark-black);
+  background: transparent;
+  border: 1px solid rgba(var(--color-cyan-rgb), 0.3);
+  border-radius: var(--spacing-sm);
+  padding: var(--spacing-sm);
   color: var(--text-primary);
-  box-sizing: border-box;
-  flex-shrink: 0;
+  margin-bottom: var(--spacing-lg);
+  font-size: 1rem;
 }
 
-.skeleton-list .skeleton-loader {
-  height: 45px;
-  margin-bottom: 1px; /* Simulates the border */
-  border-radius: 4px;
-}
-
-.document-list ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  overflow-y: auto;
+.document-list {
   flex-grow: 1;
+  overflow-y: auto;
 }
 
-.no-documents-message {
-  text-align: center;
-  color: var(--text-secondary);
-  padding: 20px;
-}
-
-.document-item {
+.document-list__item {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 10px 15px;
+  padding: var(--spacing-md);
+  border-radius: var(--spacing-sm);
   cursor: pointer;
-  border-bottom: 1px solid var(--border-color);
-  color: var(--text-secondary);
-  transition: background-color 0.2s;
-  min-height: 45px; /* Add min-height to prevent layout shift */
+  position: relative;
+  overflow: hidden;
+  transition: all var(--timing-short) var(--ease-in-out);
 }
 
-.document-item:hover {
-  background-color: var(--dark-black);
+/* Remove the ::before pseudo-element for active state to simplify */
+.document-list__item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--color-emerald); /* Use emerald for hover indicator */
+  transform: scaleY(0);
+  transition: transform var(--timing-short) var(--ease-in-out);
 }
 
-.document-item .doc-name {
+.document-list__item:hover::before {
+  transform: scaleY(1);
+}
+
+.document-list__item:hover {
+  background: rgba(var(--color-emerald-rgb), 0.1); /* Subtle emerald tint on hover */
+}
+
+/* Stronger highlight for active item */
+.document-list__item--active {
+  background: rgba(var(--color-cyan-rgb), 0.3); /* More pronounced background */
+  color: var(--color-gold); /* Gold text for active item */
+  font-weight: 700;
+  box-shadow: 0 0 15px rgba(var(--color-cyan-rgb), 0.6), inset 0 0 8px rgba(var(--color-cyan-rgb), 0.4); /* Inner and outer glow */
+  border: 1px solid var(--color-cyan); /* Solid border */
+  transform: scale(1.02); /* Slightly larger */
+}
+
+/* Ensure active item doesn't have the ::before effect */
+.document-list__item--active::before {
+    transform: scaleY(0); /* Hide ::before for active item */
+}
+
+
+.document-list__item-name {
+  color: inherit; /* Inherit color from parent (.document-list__item or active) */
   flex-grow: 1;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.rename-container {
-  display: flex;
-  align-items: center;
-  width: 100%;
-}
-
-.rename-container input {
-  flex-grow: 1;
-  background: var(--dark-black);
-  border: 1px solid var(--accent-color);
-  color: var(--text-primary);
-  padding: 4px 6px;
-  border-radius: 3px;
-  margin-right: 5px;
-}
-
-.doc-action-btn {
-  background: transparent;
-  border: 1px solid var(--text-secondary);
-  color: var(--text-secondary);
-  padding: 2px 5px;
-  font-size: 0.7rem;
-  border-radius: 3px;
-  cursor: pointer;
-  margin-left: 5px;
-}
-
-.doc-action-btn.delete {
-  color: #e57373;
-  border-color: #e57373;
-}
-
-.doc-action-btn.delete:hover {
-  background-color: #e57373;
-  color: white;
-}
-
-.document-item.active {
-  background-color: var(--accent-color);
-  color: var(--text-primary);
-  font-weight: bold;
-}
-
 .add-new-document-btn {
-  width: 100%;
-  padding: 10px;
-  background-color: var(--accent-color);
-  color: white;
+  margin-top: var(--spacing-lg);
+  background: linear-gradient(45deg, var(--color-emerald), var(--color-cyan));
+  color: var(--color-black);
   border: none;
+  border-radius: var(--spacing-sm);
+  padding: var(--spacing-md);
+  font-size: 1.1rem;
   cursor: pointer;
-  font-size: 1em;
-  border-radius: 5px;
-  flex-shrink: 0; /* Prevent button from shrinking */
-  margin-top: 10px; /* Add space between list and button */
-}
-
-.add-new-document-btn:hover {
-  background-color: #3a7bc8;
-}
-
-/* ========== MAIN CONTENT EXPANDS FULL WIDTH (IMPORTANT) ========== */
-.main-content {
-  margin-left: 250px;
-  /* same as sidebar width */
-  width: calc(100% - 250px);
-  padding: 24px;
-  box-sizing: border-box;
-  transition: margin-left 0.3s ease, width 0.3s ease;
-}
-
-/* When sidebar collapses */
-.document-side-menu.collapsed~.main-content {
-  margin-left: 60px;
-  width: calc(100% - 60px);
+  text-transform: uppercase;
+  font-weight: 700;
+  box-shadow: 0 4px 15px rgba(var(--color-emerald-rgb), 0.4);
+  transition: all var(--timing-short) var(--ease-in-out);
 }
