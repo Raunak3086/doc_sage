@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import '../pages/DocumentUpload.css'; // We can reuse the same CSS
+import axios from 'axios';
+import '../pages/DocumentUpload.css';
 
 function UploadForm({ setDocs, onClose }) {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -11,28 +12,41 @@ function UploadForm({ setDocs, onClose }) {
     setSelectedFile(event.target.files[0]);
   };
 
-  const handleUpload = () => {
-    if (selectedFile) {
+  const handleUpload = async () => {
+    if (!selectedFile) return;
+
+    try {
       setIsLoading(true);
-      console.log('Uploading file:', selectedFile);
-      console.log(`Creating directory for ${selectedFile.name}...`);
 
-      // Simulate API call for upload
-      setTimeout(() => {
-        const simulatedDocId = `doc_${Date.now()}`;
-        const newDoc = { id: simulatedDocId, name: selectedFile.name };
+      // Create FormData and append file with key 'file'
+      const formData = new FormData();
+      formData.append('file', selectedFile);
 
-        console.log('Upload complete. Doc ID:', simulatedDocId);
-        
-        // Add the new document to the list in the parent state
-        setDocs(currentDocs => [newDoc, ...currentDocs]);
-        
-        setIsLoading(false);
-        if (onClose) onClose(); // Close the modal on success
-        
-        // Navigate to interact page with the new docId
-        navigate('/interact', { state: { docId: newDoc.id, docName: newDoc.name } });
-      }, 2000);
+      // POST to backend - returns only { id }
+      const res = await axios.post('http://localhost:5000/api/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      // Backend returns only the id, e.g. { id: 'abc123' }
+      const { id } = res.data;
+
+      // Use selectedFile.name as the document name since backend only returns id
+      const newDoc = { id, name: selectedFile.name };
+
+      // Update parent doc list
+      setDocs((currentDocs) => [newDoc, ...currentDocs]);
+
+      setIsLoading(false);
+      if (onClose) onClose();
+
+      // Navigate to /interact with doc id and name
+      navigate('/interact', { state: { docId: newDoc.id, docName: newDoc.name } });
+    } catch (error) {
+      console.error('Upload error:', error);
+      setIsLoading(false);
+      // Optionally show error UI here
     }
   };
 

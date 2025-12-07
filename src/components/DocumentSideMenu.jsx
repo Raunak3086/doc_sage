@@ -28,9 +28,23 @@ const DocumentSideMenu = ({
     setIsCollapsed(!isCollapsed);
   };
 
-  const filteredDocuments = documents.filter((doc) =>
-    doc.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // --- START OF FIX ---
+  const filteredDocuments = documents.filter((doc) => {
+    // 1. Check if doc is null/undefined before continuing.
+    if (!doc) {
+      return false;
+    }
+
+    // 2. Safely access doc.name and default to an empty string if undefined/null.
+    //    We also ensure the filter function explicitly returns a boolean value.
+    const docName = doc.name || '';
+    const search = searchTerm || '';
+    
+    // Note: The original code was missing a 'return' statement inside the filter callback block,
+    // which would cause the filter to incorrectly exclude all items.
+    return docName.toLowerCase().includes(search.toLowerCase());
+  });
+  // --- END OF FIX ---
 
   const handleDelete = (docId) => {
     if (window.confirm('Are you sure you want to delete this document?')) {
@@ -137,7 +151,7 @@ const DocumentSideMenu = ({
                   </ul>
                 ) : (
                   <p className="no-documents-message">No documents found.</p>
-                )}
+                )}    
               </>
             )}
           </div>
@@ -151,5 +165,3 @@ const DocumentSideMenu = ({
 };
 
 export default DocumentSideMenu;
-
-
