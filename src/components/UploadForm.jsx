@@ -28,10 +28,10 @@ function UploadForm({ setDocs, onClose }) {
           'Content-Type': 'multipart/form-data',
         },
       });
-
+      //console.log(res);
       // Backend returns only the id, e.g. { id: 'abc123' }
-      const { id } = res.data;
-
+      const id = res.data.docId;
+      console.log(id);
       // Use selectedFile.name as the document name since backend only returns id
       const newDoc = { id, name: selectedFile.name };
 
@@ -42,6 +42,7 @@ function UploadForm({ setDocs, onClose }) {
       if (onClose) onClose();
 
       // Navigate to /interact with doc id and name
+      console.log(newDoc.id);
       navigate('/interact', { state: { docId: newDoc.id, docName: newDoc.name } });
     } catch (error) {
       console.error('Upload error:', error);
