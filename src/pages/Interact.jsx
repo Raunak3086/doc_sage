@@ -5,6 +5,7 @@ import DocumentUploadModal from '../components/DocumentUploadModal';
 import UploadForm from '../components/UploadForm';
 import SkeletonLoader from '../components/SkeletonLoader';
 import './Interact.css';
+import axios from 'axios'; // Import Axios
 
 function Interact({ docs, setDocs, isLoadingDocs, docsError }) {
   const location = useLocation();
@@ -105,19 +106,27 @@ function Interact({ docs, setDocs, isLoadingDocs, docsError }) {
     }
   }, [docId, docs, isLoadingDocs, docsError, handleDocumentSelect]);
 
-  // Simulated API call for summarize
-  const handleSummarize = () => {
+  // Axios API call for summarize
+  const handleSummarize = async () => {
+    if (!docId) {
+      setSummary('No document selected to summarize.');
+      return;
+    }
+
     setIsLoadingSummarize(true);
     setSummary('');
     console.log('Requesting summary for docId:', docId);
     
-    // This simulates a POST request to /summarize
-    setTimeout(() => {
-      const result = `This is a simulated summary for the document "${docName}". This summary is derived from its content.`;
-      setSummary(result);
+    try {
+      const response = await axios.get(`http://localhost:5000/api/summary/${docId}`);
+      setSummary(response.data.summary);
+      console.log('Summary received:', response.data.summary);
+    } catch (error) {
+      console.error('Error fetching summary:', error);
+      setSummary('Failed to fetch summary. Please try again.');
+    } finally {
       setIsLoadingSummarize(false);
-      console.log('Summary received.');
-    }, 2000); // Simulate 2-second delay
+    }
   };
 
   // Simulated API call for query
