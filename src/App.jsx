@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
-import Home from './pages/Home'; // Import Home
+import Home from './pages/Home';
 import Interact from './pages/Interact';
 import DocumentUpload from './pages/DocumentUpload';
+import Login from './pages/Login';        
+import Register from './pages/Register';  
 import './App.css';
 
 function App() {
@@ -24,14 +26,13 @@ function App() {
     }
   }, [docs]);
 
-  // The initial loading states are no longer needed as we load synchronously from localStorage
   const isLoadingDocs = false;
   const docsError = null;
 
   return (
     <>
       <Routes>
-        <Route path="/" element={<Home setDocs={setDocs} />} /> {/* Default route is now Home */}
+        <Route path="/" element={<Home setDocs={setDocs} />} />
         <Route path="/upload" element={<DocumentUpload setDocs={setDocs} />} />
         <Route
           path="/interact"
@@ -44,6 +45,11 @@ function App() {
             />
           }
         />
+
+       
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+
       </Routes>
     </>
   );
