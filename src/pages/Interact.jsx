@@ -26,28 +26,26 @@ function Interact({ docs, setDocs, isLoadingDocs, docsError }) {
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
-  const fetchDocumentContent = useCallback((id, name) => {
+  const fetchDocumentContent = useCallback(async (id, name) => {
     setIsLoadingDocumentContent(true);
     setDocumentContent('');
-    setDocumentContentError(null); // Clear any previous errors
+    setDocumentContentError(null);
     setSummary('');
     setAnswer('');
     console.log(`Fetching content for docId: ${id}`);
 
-    setTimeout(() => {
-      // Simulate random error
-      if (Math.random() > 0.8) { // 20% chance of error
-        setDocumentContentError(`Failed to load content for "${name}". Please try again.`);
-        setDocumentContent('');
-      } else {
-        setDocumentContent(`This is the simulated content for the document "${name}".
-        It could be a long text of the PDF or any other document type.
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.`);
-        setDocumentContentError(null);
-      }
+    try {
+      const response = await axios.get(`http://localhost:5000/api/file/${id}`);
+      setDocumentContent(response.data.text);
+      setDocumentContentError(null);
+    } catch (error) {
+      console.error('Error fetching document content:', error);
+      setDocumentContentError(`Failed to load content for "${name}". Please try again.`);
+      setDocumentContent('');
+    } finally {
       setIsLoadingDocumentContent(false);
       console.log('Document content loaded.');
-    }, 1500);
+    }
   }, []);
 
   const handleDocumentSelect = useCallback((doc) => {
