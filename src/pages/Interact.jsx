@@ -5,18 +5,16 @@ import DocumentUploadModal from '../components/DocumentUploadModal';
 import UploadForm from '../components/UploadForm';
 import SkeletonLoader from '../components/SkeletonLoader';
 import './Interact.css';
-import axios from 'axios'; // Import Axios
+import axios from 'axios';
 
 function Interact({ docs, setDocs, isLoadingDocs, docsError }) {
   const location = useLocation();
   const [docId, setDocId] = useState(null);
   const [docName, setDocName] = useState('');
   const [documentContent, setDocumentContent] = useState('');
-  
   const [summary, setSummary] = useState('');
   const [question, setQuestion] = useState('');
   const [answer, setAnswer] = useState('');
-
   const [isLoadingSummarize, setIsLoadingSummarize] = useState(false);
   const [isLoadingQuery, setIsLoadingQuery] = useState(false);
   const [isLoadingDocumentContent, setIsLoadingDocumentContent] = useState(false);
@@ -32,46 +30,34 @@ function Interact({ docs, setDocs, isLoadingDocs, docsError }) {
     setDocumentContentError(null);
     setSummary('');
     setAnswer('');
-    console.log(`Fetching content for docId: ${id}`);
-
     try {
       const response = await axios.get(`http://localhost:5000/api/file/${id}`);
       setDocumentContent(response.data.text);
-      setDocumentContentError(null);
     } catch (error) {
-      console.error('Error fetching document content:', error);
       setDocumentContentError(`Failed to load content for "${name}". Please try again.`);
-      setDocumentContent('');
     } finally {
       setIsLoadingDocumentContent(false);
-      console.log('Document content loaded.');
     }
   }, []);
 
   const handleDocumentSelect = useCallback((doc) => {
-    if (docsError) return; // Prevent selection if there's a global docs error
+    if (docsError || !doc) return;
     setDocId(doc.id);
     setDocName(doc.name);
     fetchDocumentContent(doc.id, doc.name);
-  }, [fetchDocumentContent, docsError]);
-
+  }, [docsError, fetchDocumentContent]);
 
   const handleDeleteDocument = (idToDelete) => {
     const updatedDocs = docs.filter((doc) => doc.id !== idToDelete);
     setDocs(updatedDocs);
-
-    // If the active document is the one being deleted
     if (docId === idToDelete) {
       if (updatedDocs.length > 0) {
-        // Select the first document in the list
         handleDocumentSelect(updatedDocs[0]);
+      } else {
+        setDocId(null);
+        setDocName('');
+        setDocumentContent('');
       }
-    } else {
-      // No documents left
-      setDocId(null);
-      setDocName('');
-      setDocumentContent('');
-      setDocumentContentError(null);
     }
   };
 
@@ -80,127 +66,119 @@ function Interact({ docs, setDocs, isLoadingDocs, docsError }) {
       doc.id === idToRename ? { ...doc, name: newName } : doc
     );
     setDocs(updatedDocs);
-
-    // If the renamed doc is the active one, update the main title
     if (docId === idToRename) {
       setDocName(newName);
     }
   };
 
-  // Effect to handle navigation from upload or direct URL
   useEffect(() => {
     if (location.state?.docId && location.state?.docName) {
       handleDocumentSelect({ id: location.state.docId, name: location.state.docName });
-      // Clear location state to prevent re-triggering
       window.history.replaceState({}, document.title);
     }
-  }, [location, handleDocumentSelect]);
+  }, [location.state, handleDocumentSelect]);
 
-  // Effect for setting the default document
   useEffect(() => {
-    // Only run if there's no selected doc, docs are loaded, and there's no error
-    if (!docId && !isLoadingDocs && !docsError && docs && docs.length > 0) {
+    if (!docId && !isLoadingDocs && !docsError && docs?.length > 0) {
       handleDocumentSelect(docs[0]);
     }
   }, [docId, docs, isLoadingDocs, docsError, handleDocumentSelect]);
 
-  // Axios API call for summarize
   const handleSummarize = async () => {
-    if (!docId) {
-      setSummary('No document selected to summarize.');
-      return;
-    }
-
+    if (!docId) return;
     setIsLoadingSummarize(true);
     setSummary('');
-    console.log('Requesting summary for docId:', docId);
-    
     try {
       const response = await axios.get(`http://localhost:5000/api/summary/${docId}`);
       setSummary(response.data.summary);
-      console.log('Summary received:', response.data.summary);
     } catch (error) {
-      console.error('Error fetching summary:', error);
-      setSummary('Failed to fetch summary. Please try again.');
+      setSummary('Failed to fetch summary.');
     } finally {
       setIsLoadingSummarize(false);
     }
   };
 
-  // Simulated API call for query
   const handleQuery = async () => {
-    if (!question.trim()) return;
+    if (!question.trim() || !docId) return;
     setIsLoadingQuery(true);
     setAnswer('');
-    console.log(`Querying docId ${docId} with question: "${question}"`);
-
     try {
       const response = await axios.post('http://localhost:5000/api/query', { docId, question });
       setAnswer(response.data.answer);
-      setQuestion(''); // Clear question input
-      console.log('Answer received:', response.data.answer);
+      setQuestion('');
     } catch (error) {
-      console.error('Error fetching answer:', error);
-      setAnswer('Failed to get answer. Please try again.');
+      setAnswer('Failed to get answer.');
     } finally {
       setIsLoadingQuery(false);
     }
   };
 
-  // --- Conditional Rendering for Interact Page ---
   if (isLoadingDocs) {
     return (
-      <div className="interact-container">
+      <div className="interact-page">
         <DocumentSideMenu documents={[]} isLoadingDocs={true} />
-        <div className="main-content">
-          <SkeletonLoader className="h1-skeleton" />
-          <SkeletonLoader className="doc-view-skeleton" />
-          <div className="sections-wrapper">
-            <SkeletonLoader className="section-skeleton" />
-            <SkeletonLoader className="section-skeleton" />
+        <main className="main-content">
+          <div className="main-content__header">
+            <h1 className="main-content__title main-content__title--skeleton"><SkeletonLoader /></h1>
           </div>
-        </div>
+          <div className="document-view document-view--skeleton"><SkeletonLoader /></div>
+          <div className="grid-layout">
+            <div className="grid-item grid-item--skeleton"><SkeletonLoader /></div>
+            <div className="grid-item grid-item--skeleton"><SkeletonLoader /></div>
+          </div>
+        </main>
       </div>
     );
   }
 
   if (docsError) {
     return (
-      <div className="interact-container">
-        <DocumentSideMenu documents={[]} isLoadingDocs={false} docsError={docsError} />
-        <div className="main-content interact-centered">
+      <div className="interact-page">
+        <DocumentSideMenu documents={[]} docsError={docsError} />
+        <main className="main-content main-content--centered">
           <p className="error-message">{docsError}</p>
-        </div>
+        </main>
       </div>
     );
   }
-
+  
   if (docs.length === 0) {
     return (
-      <div className="interact-container">
-        <DocumentSideMenu
-          documents={docs}
-          onAddNewDocument={openModal}
-          isLoadingDocs={isLoadingDocs}
-          docsError={docsError}
-        />
-        <div className="main-content interact-centered">
-          <h1>No Documents</h1>
-          <p>Upload a document to get started.</p>
+      <>
+        <div className="interact-page">
+          <DocumentSideMenu documents={docs} onAddNewDocument={openModal} />
+          <main className="main-content main-content--centered">
+            <div className="empty-state">
+              <h1 className="empty-state__title">No Documents</h1>
+              <p className="empty-state__subtitle">Upload a document to get started.</p>
+            </div>
+          </main>
         </div>
-        {isModalOpen && (
-          <DocumentUploadModal onClose={closeModal}>
-            <UploadForm setDocs={setDocs} onClose={closeModal} />
-          </DocumentUploadModal>
-        )}
-      </div>
+        {isModalOpen && <DocumentUploadModal onClose={closeModal}><UploadForm setDocs={setDocs} onClose={closeModal} /></DocumentUploadModal>}
+      </>
     );
   }
 
-  // Display specific content or a message if docId is null after initial load
   if (!docId) {
     return (
-      <div className="interact-container">
+      <>
+        <div className="interact-page">
+          <DocumentSideMenu documents={docs} onAddNewDocument={openModal} onDocumentSelect={handleDocumentSelect} />
+          <main className="main-content main-content--centered">
+            <div className="empty-state">
+              <h1 className="empty-state__title">Select a Document</h1>
+              <p className="empty-state__subtitle">Choose a document from the sidebar to begin.</p>
+            </div>
+          </main>
+        </div>
+        {isModalOpen && <DocumentUploadModal onClose={closeModal}><UploadForm setDocs={setDocs} onClose={closeModal} /></DocumentUploadModal>}
+      </>
+    );
+  }
+
+  return (
+    <>
+      <div className="interact-page">
         <DocumentSideMenu
           documents={docs}
           activeDocId={docId}
@@ -208,93 +186,63 @@ function Interact({ docs, setDocs, isLoadingDocs, docsError }) {
           onAddNewDocument={openModal}
           onDocumentDelete={handleDeleteDocument}
           onDocumentRename={handleRenameDocument}
-          isLoadingDocs={isLoadingDocs}
-          docsError={docsError}
         />
-        <div className="main-content interact-centered">
-          <h1>Select a Document</h1>
-          <p>Choose a document from the sidebar to view its content and interact with it.</p>
-        </div>
-        {isModalOpen && (
-          <DocumentUploadModal onClose={closeModal}>
-            <UploadForm setDocs={setDocs} onClose={closeModal} />
-          </DocumentUploadModal>
-        )}
-      </div>
-    );
-  }
-
-
-  return (
-    <div className="interact-container">
-      <DocumentSideMenu
-        documents={docs}
-        activeDocId={docId}
-        onDocumentSelect={handleDocumentSelect}
-        onAddNewDocument={openModal}
-        onDocumentDelete={handleDeleteDocument}
-        onDocumentRename={handleRenameDocument}
-        isLoadingDocs={isLoadingDocs}
-        docsError={docsError}
-      />
-      <div className="main-content">
-        <h1>{docName}</h1>
-
-        <div className="document-view">
-          {isLoadingDocumentContent ? (
-            <SkeletonLoader style={{ height: '100%', minHeight: '150px' }} />
-          ) : documentContentError ? (
-            <p className="error-message">{documentContentError}</p>
-          ) : (
-            <p>{documentContent}</p>
-          )}
-        </div>
-
-        <div className="sections-wrapper"> {/* New wrapper for horizontal layout */}
-          {/* --- Summarize Section --- */}
-          <div className="section">
-            <h2>SUMMARY</h2>
-            <button onClick={handleSummarize} disabled={isLoadingSummarize || isLoadingDocumentContent || !!documentContentError}>
-              {isLoadingSummarize ? 'Summarizing...' : 'Summarize'}
-            </button>
-            <textarea
-              readOnly
-              value={summary}
-              placeholder="Summary will appear here..."
-              rows="8"
-            />
+        <main className="main-content">
+          <div className="main-content__header">
+            <h1 className="main-content__title">{docName}</h1>
           </div>
 
-          {/* --- Query Section --- */}
-          <div className="section">
-            <h2>ASK QUERY</h2>
-            <div className="query-box">
-              <input
-                type="text"
-                value={question}
-                onChange={(e) => setQuestion(e.target.value)}
-                placeholder="Ask a question about the document..."
-                disabled={isLoadingQuery || isLoadingDocumentContent || !!documentContentError}
-              />
-              <button onClick={handleQuery} disabled={!question || isLoadingQuery || isLoadingDocumentContent || !!documentContentError}>
-                {isLoadingQuery ? 'Asking...' : 'Ask'}
+          <div className="document-view">
+            {isLoadingDocumentContent ? (
+              <SkeletonLoader />
+            ) : documentContentError ? (
+              <p className="error-message">{documentContentError}</p>
+            ) : (
+              <p className="document-view__content">{documentContent}</p>
+            )}
+          </div>
+
+          <div className="grid-layout">
+            <div className="grid-item">
+              <h2 className="grid-item__title">Summary</h2>
+              <button className="grid-item__button" onClick={handleSummarize} disabled={isLoadingSummarize || isLoadingDocumentContent}>
+                {isLoadingSummarize ? 'Summarizing...' : 'Summarize'}
               </button>
+              <textarea
+                className="grid-item__textarea"
+                readOnly
+                value={summary}
+                placeholder="Summary will appear here..."
+              />
             </div>
-            <textarea
-              readOnly
-              value={answer}
-              placeholder="Answer will appear here..."
-              rows="8"
-            />
+
+            <div className="grid-item">
+              <h2 className="grid-item__title">Ask Query</h2>
+              <div className="query-box">
+                <input
+                  type="text"
+                  className="query-box__input"
+                  value={question}
+                  onChange={(e) => setQuestion(e.target.value)}
+                  placeholder="Ask a question..."
+                  disabled={isLoadingQuery || isLoadingDocumentContent}
+                />
+                <button className="query-box__button" onClick={handleQuery} disabled={!question || isLoadingQuery || isLoadingDocumentContent}>
+                  {isLoadingQuery ? 'Asking...' : 'Ask'}
+                </button>
+              </div>
+              <textarea
+                className="grid-item__textarea"
+                readOnly
+                value={answer}
+                placeholder="Answer will appear here..."
+              />
+            </div>
           </div>
-        </div>
+        </main>
       </div>
-      {isModalOpen && (
-        <DocumentUploadModal onClose={closeModal}>
-          <UploadForm setDocs={setDocs} onClose={closeModal} />
-        </DocumentUploadModal>
-      )}
-    </div>
+      {isModalOpen && <DocumentUploadModal onClose={closeModal}><UploadForm setDocs={setDocs} onClose={closeModal} /></DocumentUploadModal>}
+    </>
   );
 }
 

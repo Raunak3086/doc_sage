@@ -1,28 +1,37 @@
-/* Light Black and Dark Black Easy UI Theme */
+/* DocumentUpload.css */
+
 .document-upload-container {
-    padding: 20px;
+  padding: var(--spacing-xl);
+  text-align: center;
 }
 
-.document-upload-container h1 {
-    font-size: 1.5rem;
-    text-align: center;
-    margin-bottom: 1.5rem;
-    color: var(--text-primary);
+.document-upload-container__title {
+  font-size: 2rem;
+  color: var(--color-pink);
+  margin-bottom: var(--spacing-md);
 }
 
-.document-upload-container p {
-    text-align: center;
-    color: var(--text-secondary);
-    margin-bottom: 1.5rem;
+.document-upload-container__subtitle {
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-xl);
 }
 
-.document-upload-container input[type="file"] {
-    display: block;
-    margin: 0 auto 1.5rem auto;
-    color: var(--text-secondary);
+.document-upload-container__input {
+  display: block;
+  margin: 0 auto var(--spacing-xl) auto;
+  border: 2px dashed rgba(var(--color-pink-rgb), 0.5);
+  padding: var(--spacing-xl);
+  border-radius: var(--spacing-lg);
+  color: var(--text-secondary);
+  background: transparent;
 }
 
-.document-upload-container button {
-    display: block;
-    margin: 0 auto;
+.document-upload-container__button {
+  background: var(--color-pink);
+  color: var(--color-black);
+  border: none;
+  border-radius: var(--spacing-sm);
+  padding: var(--spacing-md) var(--spacing-xl);
+  font-size: 1.2rem;
+  cursor: pointer;
 }
