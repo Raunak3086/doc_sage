@@ -13,8 +13,11 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
+import queryRouter from './routes/query.js';
+
 app.use('/api/upload', uploadRouter);
 app.use('/api/summary', summaryRouter);
+app.use('/api/query', queryRouter);
 
 app.get('/', (req, res) => {
     res.send('Hello from the backend!');
