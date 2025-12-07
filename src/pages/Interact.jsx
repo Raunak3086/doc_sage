@@ -130,19 +130,23 @@ function Interact({ docs, setDocs, isLoadingDocs, docsError }) {
   };
 
   // Simulated API call for query
-  const handleQuery = () => {
+  const handleQuery = async () => {
     if (!question.trim()) return;
     setIsLoadingQuery(true);
     setAnswer('');
     console.log(`Querying docId ${docId} with question: "${question}"`);
 
-    // This simulates a POST request to /query
-    setTimeout(() => {
-      const result = `This is a simulated answer to your question: "${question}". Based on the document "${docName}".`;
-      setAnswer(result);
+    try {
+      const response = await axios.post('http://localhost:5000/api/query', { docId, question });
+      setAnswer(response.data.answer);
+      setQuestion(''); // Clear question input
+      console.log('Answer received:', response.data.answer);
+    } catch (error) {
+      console.error('Error fetching answer:', error);
+      setAnswer('Failed to get answer. Please try again.');
+    } finally {
       setIsLoadingQuery(false);
-      console.log('Answer received.');
-    }, 2000); // Simulate 2-second delay
+    }
   };
 
   // --- Conditional Rendering for Interact Page ---
