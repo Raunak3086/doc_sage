@@ -15,9 +15,12 @@ app.use(express.json());
 
 import queryRouter from './routes/query.js';
 
+import fileFetchRouter from './routes/fileFetch.js';
+
 app.use('/api/upload', uploadRouter);
 app.use('/api/summary', summaryRouter);
 app.use('/api/query', queryRouter);
+app.use('/api/file', fileFetchRouter);
 
 app.get('/', (req, res) => {
     res.send('Hello from the backend!');
