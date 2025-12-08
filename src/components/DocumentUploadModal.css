@@ -34,3 +34,9 @@
   height: 32px;
   cursor: pointer;
 }
+
+.button-group {
+  display: flex;
+  gap: var(--spacing-md); /* This will add a gap between buttons */
+  margin-top: var(--spacing-lg);
+}
