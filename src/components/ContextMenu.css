@@ -1,35 +1,164 @@
-.context-menu {
+/* Morphin Grid Hologram Menu - CLEAN DESIGN */
+
+:root {
+  --color-primary: #e63946;
+  --color-secondary: #457b9d;
+  --color-accent: #ffd60a;
+  --color-grid: #00ffcc;
+  --color-glass: rgba(255, 255, 255, 0.1);
+  --color-glass-glow: rgba(255, 255, 255, 0.2);
+  --color-dark: #05050a;
+  --color-darker: #1a1a2e;
+
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+
+  --radius-md: 12px;
+  --radius-lg: 16px;
+
+  --blur-soft: blur(20px);
+}
+
+/* Theme Variants */
+[data-theme="red"] { --color-primary: #e63946; --color-secondary: #ff006e; }
+[data-theme="blue"] { --color-primary: #457b9d; --color-secondary: #00a8e8; }
+[data-theme="yellow"] { --color-primary: #ffd60a; --color-secondary: #ff9500; }
+[data-theme="pink"] { --color-primary: #ff006e; --color-secondary: #ff1493; }
+[data-theme="black"] { --color-primary: #1a1a2e; --color-secondary: #16213e; }
+
+/* HOLOGRAM MENU CONTAINER */
+.hologram-menu {
+  position: fixed;
+  z-index: 10000;
+  background: var(--color-glass);
+  backdrop-filter: var(--blur-soft);
+  border: 1px solid var(--color-glass-glow);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  min-width: 180px;
+  font-family: 'Orbitron', monospace;
+  overflow: hidden;
+}
+
+/* REMOVED: Animated hologram glow */
+.menu-grid {
   position: absolute;
-  z-index: 1000;
-  background-color: var(--light-black);
-  border: 1px solid var(--border-color);
-  border-radius: 5px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-  min-width: 150px;
+  inset: 0;
+  background-image: 
+    linear-gradient(rgba(0,255,204,0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,255,204,0.08) 1px, transparent 1px);
+  background-size: 20px 20px;
+  opacity: 0.2;
+  pointer-events: none;
+  z-index: 1;
 }
 
-.context-menu ul {
+/* MENU LIST */
+.hologram-menu ul {
   list-style: none;
-  padding: 5px 0;
   margin: 0;
+  padding: var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  position: relative;
+  z-index: 2;
 }
 
-.context-menu li {
-  padding: 8px 15px;
+/* MENU ITEMS */
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: var(--radius-md);
   cursor: pointer;
-  color: var(--text-primary);
-  transition: background-color 0.2s;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  transition: all 0.25s cubic-bezier(0.23,1,0.32,1);
+  position: relative;
+  overflow: hidden;
+  user-select: none;
 }
 
-.context-menu li:hover {
-  background-color: var(--accent-color);
+.menu-item::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: -1;
 }
 
-.context-menu li.delete {
-  color: var(--error-color);
+.menu-item:hover::before {
+  opacity: 1;
 }
 
-.context-menu li.delete:hover {
-  background-color: var(--error-color);
-  color: var(--text-primary);
+.menu-item:hover {
+  transform: translateX(4px);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.2);
+}
+
+/* RENAME ITEM */
+.menu-item--rename {
+  color: var(--color-accent);
+  border-left: 3px solid var(--color-accent);
+}
+
+.menu-item--rename:hover {
+  background: rgba(255,214,10,0.12);
+}
+
+/* DELETE ITEM */
+.menu-item--delete {
+  color: #ef4444;
+  border-left: 3px solid #ef4444;
+}
+
+.menu-item--delete:hover {
+  background: rgba(239,68,68,0.12);
+}
+
+/* ITEM ICONS */
+.item-icon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+/* REMOVED: All hologram animations */
+.menu-item:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-grid);
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .hologram-menu {
+    min-width: 160px;
+    font-size: 0.85rem;
+  }
+  
+  .menu-item {
+    padding: var(--spacing-sm) var(--spacing-md);
+    gap: var(--spacing-sm);
+  }
+  
+  .item-icon {
+    font-size: 1rem;
+  }
+}
+
+/* HIGH CONTRAST MODE */
+@media (prefers-contrast: high) {
+  .hologram-menu {
+    border-width: 2px;
+  }
+  
+  .menu-item {
+    border: 1px solid rgba(255,255,255,0.2);
+  }
 }

@@ -1,14 +1,15 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useLocation, Link } from 'react-router-dom';
+import { useLocation, Link, useNavigate } from 'react-router-dom';  // ✅ Added useNavigate
 import DocumentSideMenu from '../components/DocumentSideMenu';
 import DocumentUploadModal from '../components/DocumentUploadModal';
 import UploadForm from '../components/UploadForm';
 import SkeletonLoader from '../components/SkeletonLoader';
-import './Interact.css';
+import './Interact.css'; // Keep this import for now for non-button styles
 import axios from 'axios';
 
 function Interact() {
   const location = useLocation();
+  const navigate = useNavigate();  // ✅ Added for logout
   const [userId, setUserId] = useState(null);
   const [docs, setDocs] = useState([]);
   const [isLoadingDocs, setIsLoadingDocs] = useState(true);
@@ -24,6 +25,28 @@ function Interact() {
   const [isLoadingDocumentContent, setIsLoadingDocumentContent] = useState(false);
   const [documentContentError, setDocumentContentError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // ✅ NEW: Logout handler
+  const handleLogout = () => {
+    // Clear user session
+    setUserId(null);
+    setDocs([]);
+    setDocId(null);
+    setDocName('');
+    setDocumentContent('');
+    
+    // Clear localStorage theme (optional)
+    localStorage.removeItem('selectedTheme');
+    
+    // Redirect to home
+    navigate('/', { replace: true });
+  };
+
+  // Theme restoration from login
+  useEffect(() => {
+    const theme = localStorage.getItem('selectedTheme') || 'red';
+    document.body.setAttribute('data-theme', theme);
+  }, []);
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
@@ -61,7 +84,7 @@ function Interact() {
     try {
       const response = await axios.get(`http://localhost:5000/api/file/${id}`);
       setDocumentContent(response.data.text);
-    } catch (error)  {
+    } catch (error) {
       setDocumentContentError(`Failed to load content for "${name}". Please try again.`);
     } finally {
       setIsLoadingDocumentContent(false);
@@ -75,17 +98,23 @@ function Interact() {
     fetchDocumentContent(doc.id, doc.name);
   }, [docsError, fetchDocumentContent]);
 
-  const handleDeleteDocument = (idToDelete) => {
-    const updatedDocs = docs.filter((doc) => doc.id !== idToDelete);
-    setDocs(updatedDocs);
-    if (docId === idToDelete) {
-      if (updatedDocs.length > 0) {
-        handleDocumentSelect(updatedDocs[0]);
-      } else {
-        setDocId(null);
-        setDocName('');
-        setDocumentContent('');
+  const handleDeleteDocument = async (idToDelete) => {
+    try {
+      await axios.delete(`http://localhost:5000/api/docs/delete/${idToDelete}`);
+      const updatedDocs = docs.filter((doc) => doc.id !== idToDelete);
+      setDocs(updatedDocs);
+      if (docId === idToDelete) {
+        if (updatedDocs.length > 0) {
+          handleDocumentSelect(updatedDocs[0]);
+        } else {
+          setDocId(null);
+          setDocName('');
+          setDocumentContent('');
+        }
       }
+    } catch (error) {
+      console.error('Failed to delete document:', error);
+      // Optionally, show an error message to the user
     }
   };
 
@@ -141,135 +170,227 @@ function Interact() {
     }
   };
 
+  // Loading state - Morphin Grid initializing
   if (isLoadingDocs) {
     return (
-      <div className="interact-page">
-        <DocumentSideMenu documents={[]} isLoadingDocs={true} />
-        <main className="main-content">
-          <div className="main-content__header">
-            <h1 className="main-content__title main-content__title--skeleton"><SkeletonLoader /></h1>
-          </div>
-          <div className="document-view document-view--skeleton"><SkeletonLoader /></div>
-          <div className="grid-layout">
-            <div className="grid-item grid-item--skeleton"><SkeletonLoader /></div>
-            <div className="grid-item grid-item--skeleton"><SkeletonLoader /></div>
+      <div className="morphin-grid">
+        <div className="grid-sidebar">
+          <div className="grid-title">📡 RANGER DATA ARCHIVE</div>
+          <div className="loading-status">Initializing Morphin Grid...</div>
+        </div>
+        <main className="grid-command-center">
+          <div className="scanline-animation"></div>
+          <div className="loading-hologram">
+            <div className="hologram-core"></div>
+            <div className="hologram-text">SYNCING WITH GRID...</div>
           </div>
         </main>
       </div>
     );
   }
 
+  // Error state
   if (docsError) {
     return (
-      <div className="interact-page">
-        <DocumentSideMenu documents={[]} docsError={docsError} />
-        <main className="main-content main-content--centered">
-          <p className="error-message">{docsError}</p>
+      <div className="morphin-grid">
+        <div className="grid-sidebar">
+          <div className="grid-title">📡 RANGER DATA ARCHIVE</div>
+          <div className="error-status">{docsError}</div>
+          <button className="btn btn--secondary" onClick={openModal}>
+            🔄 RESYNC GRID
+          </button>
+        </div>
+        <main className="grid-command-center">
+          <div className="error-display">
+            <div className="error-icon">⚠️</div>
+            <h2>GRID CONNECTION LOST</h2>
+            <p>Upload a data crystal to restore connection</p>
+          </div>
         </main>
       </div>
     );
   }
-  
+
+  // No documents
   if (docs.length === 0) {
     return (
       <>
-        <div className="interact-page">
-          <DocumentSideMenu documents={docs} onAddNewDocument={openModal} />
-          <main className="main-content main-content--centered">
+        <div className="morphin-grid">
+          <div className="grid-sidebar">
+            <div className="grid-title">📡 RANGER DATA ARCHIVE</div>
+            <button className="btn btn--secondary" onClick={openModal}>
+              💎 UPLOAD DATA CRYSTAL
+            </button>
+            <div className="empty-archive">No ranger data crystals detected</div>
+          </div>
+          <main className="grid-command-center">
             <div className="empty-state">
-              <h1 className="empty-state__title">No Documents</h1>
-              <p className="empty-state__subtitle">Upload a document to get started.</p>
+              <div className="morphin-symbol">⚡</div>
+              <h1>GRID READY FOR DATA</h1>
+              <p>Upload your first data crystal to activate AI analysis</p>
             </div>
           </main>
         </div>
-        {isModalOpen && <DocumentUploadModal onClose={closeModal}><UploadForm setDocs={setDocs} userId={userId} onClose={closeModal} /></DocumentUploadModal>}
+        {isModalOpen && (
+          <DocumentUploadModal onClose={closeModal}>
+            <UploadForm setDocs={setDocs} userId={userId} onClose={closeModal} />
+          </DocumentUploadModal>
+        )}
       </>
     );
   }
 
+  // No doc selected
   if (!docId) {
     return (
       <>
-        <div className="interact-page">
-          <DocumentSideMenu documents={docs} onAddNewDocument={openModal} onDocumentSelect={handleDocumentSelect} />
-          <main className="main-content main-content--centered">
+        <div className="morphin-grid">
+          <div className="grid-sidebar">
+            <div className="grid-title">📡 RANGER DATA ARCHIVE</div>
+            <button className="btn btn--secondary" onClick={openModal}>
+              💎 UPLOAD DATA CRYSTAL
+            </button>
+          </div>
+          <main className="grid-command-center">
             <div className="empty-state">
-              <h1 className="empty-state__title">Select a Document</h1>
-              <p className="empty-state__subtitle">Choose a document from the sidebar to begin.</p>
+              <div className="ranger-symbol">🦸</div>
+              <div className="user-id-display">
+                <span className="user-id-label">Ranger ID:</span>
+                <span className="user-id">{userId}</span>
+              </div>
+              <h1>SELECT DATA CRYSTAL</h1>
+              <p>Choose a crystal from the archive to analyze</p>
             </div>
           </main>
         </div>
-        {isModalOpen && <DocumentUploadModal onClose={closeModal}><UploadForm setDocs={setDocs} userId={userId} onClose={closeModal} /></DocumentUploadModal>}
+        {isModalOpen && (
+          <DocumentUploadModal onClose={closeModal}>
+            <UploadForm setDocs={setDocs} userId={userId} onClose={closeModal} />
+          </DocumentUploadModal>
+        )}
       </>
     );
   }
 
+  // Main interface ✅ ADDED LOGOUT BUTTON + USER ID
   return (
     <>
-      <div className="interact-page">
-        <DocumentSideMenu
-          documents={docs}
-          activeDocId={docId}
-          onDocumentSelect={handleDocumentSelect}
-          onAddNewDocument={openModal}
-          onDocumentDelete={handleDeleteDocument}
-          onDocumentRename={handleRenameDocument}
-        />
-        <main className="main-content">
-          <div className="main-content__header">
-            <h1 className="main-content__title">{docName}</h1>
+      <div className="morphin-grid">
+        <div className="grid-sidebar">
+          <div className="grid-title">📡 RANGER DATA ARCHIVE</div>
+          {/* ✅ NEW: Ranger ID Display */}
+          <div className="ranger-id-section">
+            <span className="user-id-label">Ranger ID:</span>
+            <span className="user-id">{userId}</span>
+          </div>
+          <button className="btn btn--secondary" onClick={openModal}>
+            💎 UPLOAD DATA CRYSTAL
+          </button>
+          <DocumentSideMenu
+            documents={docs}
+            activeDocId={docId}
+            onDocumentSelect={handleDocumentSelect}
+            onAddNewDocument={openModal}
+            onDocumentDelete={handleDeleteDocument}
+            onDocumentRename={handleRenameDocument}
+          />
+        </div>
+
+        <main className="grid-command-center">
+          <div className="command-header">
+            {/* ✅ NEW: User ID + Logout in Header */}
+            <div className="header-left">
+              <h1 className="crystal-title">{docName}</h1>
+              <div className="user-id-display">
+                <span className="user-id-label">ID: {userId}</span>
+              </div>
+            </div>
+            <div className="header-right">
+              <div className="status-indicators">
+                <span className="status-active">🔴 ONLINE</span>
+                <span className="status-scan">SCANNING...</span>
+              </div>
+              {/* ✅ NEW: Logout Button */}
+              <button className="btn btn--danger" onClick={handleLogout}>
+                🚪 LOGOUT RANGER
+              </button>
+            </div>
           </div>
 
-          <div className="document-view">
+          {/* Data Crystal Viewer */}
+          <div className="crystal-viewer">
             {isLoadingDocumentContent ? (
-              <SkeletonLoader />
+              <div className="crystal-loading">
+                <div className="loading-core"></div>
+                <div>EXTRACTING CRYSTAL DATA...</div>
+              </div>
             ) : documentContentError ? (
-              <p className="error-message">{documentContentError}</p>
+              <div className="error-message">
+                <div className="error-message__icon">⚠️</div>
+                <p>{documentContentError}</p>
+              </div>
             ) : (
-              <p className="document-view__content">{documentContent}</p>
+              <div className="crystal-content">{documentContent}</div>
             )}
           </div>
 
-          <div className="grid-layout">
-            <div className="grid-item">
-              <h2 className="grid-item__title">Summary</h2>
-              <button className="grid-item__button" onClick={handleSummarize} disabled={isLoadingSummarize || isLoadingDocumentContent}>
-                {isLoadingSummarize ? 'Summarizing...' : 'Summarize'}
+          {/* AI Command Modules */}
+          <div className="ai-modules">
+            {/* Morphin Analyzer */}
+            <div className="module-card analyzer-module">
+              <div className="module-header">
+                <div className="module-icon">🔮</div>
+                <h3>MORPHIN ANALYZER</h3>
+              </div>
+              <button 
+                className="btn btn--primary" 
+                onClick={handleSummarize} 
+                disabled={isLoadingSummarize || isLoadingDocumentContent}
+              >
+                {isLoadingSummarize ? 'ANALYZING...' : 'ACTIVATE ANALYZER'}
               </button>
-              <textarea
-                className="grid-item__textarea"
-                readOnly
-                value={summary}
-                placeholder="Summary will appear here..."
-              />
+              <div className="analysis-output">
+                {summary || 'Analysis will appear here...'}
+              </div>
             </div>
 
-            <div className="grid-item">
-              <h2 className="grid-item__title">Ask Query</h2>
-              <div className="query-box">
+            {/* Zord Query Interface */}
+            <div className="module-card query-module">
+              <div className="module-header">
+                <div className="module-icon">🤖</div>
+                <h3>ZORD QUERY INTERFACE</h3>
+              </div>
+              <div className="query-interface">
                 <input
                   type="text"
-                  className="query-box__input"
+                  className="query-input"
                   value={question}
                   onChange={(e) => setQuestion(e.target.value)}
-                  placeholder="Ask a question..."
+                  placeholder="Query the Zord AI..."
                   disabled={isLoadingQuery || isLoadingDocumentContent}
+                  onKeyPress={(e) => e.key === 'Enter' && handleQuery()}
                 />
-                <button className="query-box__button" onClick={handleQuery} disabled={!question || isLoadingQuery || isLoadingDocumentContent}>
-                  {isLoadingQuery ? 'Asking...' : 'Ask'}
+                <button 
+                  className="btn btn--primary" 
+                  onClick={handleQuery} 
+                  disabled={!question.trim() || isLoadingQuery || isLoadingDocumentContent}
+                >
+                  {isLoadingQuery ? 'QUERYING...' : 'QUERY ZORD'}
                 </button>
               </div>
-              <textarea
-                className="grid-item__textarea"
-                readOnly
-                value={answer}
-                placeholder="Answer will appear here..."
-              />
+              <div className="query-output">
+                {answer || 'Zord AI response will appear here...'}
+              </div>
             </div>
           </div>
         </main>
       </div>
-      {isModalOpen && <DocumentUploadModal onClose={closeModal}><UploadForm setDocs={setDocs} userId={userId} onClose={closeModal} /></DocumentUploadModal>}
+      
+      {isModalOpen && (
+        <DocumentUploadModal onClose={closeModal}>
+          <UploadForm setDocs={setDocs} userId={userId} onClose={closeModal} />
+        </DocumentUploadModal>
+      )}
     </>
   );
 }

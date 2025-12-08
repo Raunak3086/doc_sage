@@ -20,6 +20,7 @@ import fileFetchRouter from './routes/fileFetch.js';
 
 import idFetchRouter from './routes/idFetch.js';
 import connectOtherRouter from './routes/connectOther.js';
+import idDeleteRouter from './routes/idDelete.js';
 
 // Added — authentication
 app.use('/api/auth', authRouter);
@@ -29,6 +30,7 @@ app.use('/api/summary', summaryRouter);
 app.use('/api/query', queryRouter);
 app.use('/api/file', fileFetchRouter);
 app.use('/api/docs/connect', connectOtherRouter);
+app.use('/api/docs/delete', idDeleteRouter);
 app.use('/api/docs', idFetchRouter);
 
 app.get('/', (req, res) => {

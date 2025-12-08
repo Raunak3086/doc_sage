@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import './UploadForm.css';
 
 function UploadForm({ setDocs, userId, onClose }) {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -18,7 +19,7 @@ function UploadForm({ setDocs, userId, onClose }) {
 
   const handleUpload = async () => {
     if (!selectedFile) {
-      setError('Please select a file first');
+      setError('Select a data crystal first');
       return;
     }
 
@@ -26,12 +27,12 @@ function UploadForm({ setDocs, userId, onClose }) {
       setIsLoading(true);
       setError(null);
 
-      // Create FormData and append file
+      // Create FormData and append file (SAME functionality)
       const formData = new FormData();
       formData.append('file', selectedFile);
       formData.append('userId', userId);
 
-      // POST to backend
+      // POST to backend (SAME endpoint)
       const res = await axios.post('http://localhost:5000/api/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -46,14 +47,12 @@ function UploadForm({ setDocs, userId, onClose }) {
         updatedAt: new Date().toISOString(),
       };
 
-      // ✅ FIX: Ensure currentDocs is always an array
+      // SAME array handling logic
       setDocs((currentDocs) => {
-        // Handle if currentDocs is null, undefined, or not an array
         if (!Array.isArray(currentDocs)) {
           console.warn('currentDocs is not an array:', currentDocs);
           return [newDoc];
         }
-        // Safe to spread now
         return [newDoc, ...currentDocs];
       });
 
@@ -62,7 +61,7 @@ function UploadForm({ setDocs, userId, onClose }) {
       
       if (onClose) onClose();
 
-      // Navigate to /interact with new doc details
+      // SAME navigation behavior
       navigate('/interact', { 
         state: { 
           docId: newDoc.id, 
@@ -71,7 +70,7 @@ function UploadForm({ setDocs, userId, onClose }) {
       });
     } catch (error) {
       console.error('Upload error:', error);
-      const errorMessage = error.response?.data?.message || error.message || 'Upload failed';
+      const errorMessage = error.response?.data?.message || error.message || 'Crystal upload failed';
       setError(errorMessage);
       setIsLoading(false);
     }
@@ -84,49 +83,91 @@ function UploadForm({ setDocs, userId, onClose }) {
   };
 
   return (
-    <div className="document-upload-container">
-      <h1>Document Upload</h1>
-      <p>Select a file to begin.</p>
-      
-      {error && <div className="error-alert">{error}</div>}
-      
-      <input 
-        type="file" 
-        onChange={handleFileChange}
-        disabled={isLoading}
-        accept=".pdf,.doc,.docx,.txt,.pptx"
-        aria-label="Select file to upload"
-      />
-      
-      {selectedFile && (
-        <p className="selected-file">
-          Selected: <strong>{selectedFile.name}</strong> ({(selectedFile.size / 1024).toFixed(2)} KB)
-        </p>
-      )}
-      
-      <div className="button-group">
-        <button 
-          onClick={handleUpload} 
-          disabled={!selectedFile || isLoading}
-          className="btn btn-primary"
-        >
-          {isLoading ? 'Uploading...' : 'Upload'}
-        </button>
-        <button 
-          onClick={handleCancel}
-          disabled={isLoading}
-          className="btn btn-secondary"
-        >
-          Cancel
-        </button>
+    <div className="crystal-uploader">
+      <div className="crystal-container">
+        {/* Header */}
+        <div className="crystal-header">
+          <div className="crystal-orb">💎</div>
+          <h1 className="crystal-title">DATA CRYSTAL UPLOADER</h1>
+          <p className="crystal-subtitle">Insert ranger intelligence into Morphin Grid</p>
+        </div>
+
+        {/* Status */}
+        {error && (
+          <div className="crystal-alert crystal-alert--error">
+            <span className="alert-icon">⚠️</span>
+            <span>{error}</span>
+          </div>
+        )}
+
+        {selectedFile && (
+          <div className="crystal-preview">
+            <div className="preview-glow"></div>
+            <div className="preview-content">
+              <span className="preview-icon">✅</span>
+              <div className="preview-info">
+                <strong className="preview-name">{selectedFile.name}</strong>
+                <span className="preview-size">
+                  {(selectedFile.size / 1024).toFixed(1)} KB
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* File Input */}
+        <div className="file-dropzone">
+          <input 
+            type="file" 
+            id="crystal-input"
+            onChange={handleFileChange}
+            disabled={isLoading}
+            accept=".pdf,.doc,.docx,.txt,.pptx"
+            className="file-input"
+          />
+          <label htmlFor="crystal-input" className="dropzone-label">
+            {selectedFile ? 'Change Crystal' : 'Drag Data Crystal Here\nor Click to Select'}
+          </label>
+        </div>
+
+        {/* Controls */}
+        <div className="crystal-controls">
+          <button 
+            className="control-btn control-btn--upload"
+            onClick={handleUpload} 
+            disabled={!selectedFile || isLoading}
+          >
+            {isLoading ? (
+              <>
+                <span className="crystal-spinner"></span>
+                CRYSTALIZING...
+              </>
+            ) : (
+              'INSERT INTO GRID'
+            )}
+          </button>
+          <button 
+            className="control-btn control-btn--cancel"
+            onClick={handleCancel}
+            disabled={isLoading}
+          >
+            ABORT UPLOAD
+          </button>
+        </div>
+
+        {/* Progress Bar */}
+        {isLoading && (
+          <div className="crystal-progress">
+            <div className="progress-glow"></div>
+            <div className="progress-bar">
+              <div className="progress-fill"></div>
+            </div>
+            <span className="progress-text">Syncing with Morphin Grid...</span>
+          </div>
+        )}
       </div>
     </div>
   );
 }
 
 export default UploadForm;
-
-
-
-
-

@@ -1,15 +1,152 @@
-/* App.css */
+/* Morphin Grid Command Center - Clean Global Styles */
 
-#root {
-  width: 100vw;
-  min-height: 100vh;
-  /* Ensure #root takes up full width and height without centering */
-  margin: 0;
-  padding: 0;
-  max-width: none;
+:root {
+  --color-primary: #e63946;
+  --color-secondary: #457b9d;
+  --color-accent: #ffd60a;
+  --color-grid: #00ffcc;
+  --color-dark: #05050a;
+  --color-darker: #1a1a2e;
+  --color-glass: rgba(255, 255, 255, 0.06);
+
+  --spacing-xl: 32px;
 }
 
-/* Hide unused default Vite styles */
-.logo, .logo:hover, .logo.react:hover, @keyframes logo-spin, .card, .read-the-docs {
-  display: none;
+/* Theme Variants - Global */
+[data-theme="red"] {
+  --color-primary: #e63946;
+  --color-secondary: #ff006e;
+  --color-accent: #ffd60a;
+}
+
+[data-theme="blue"] {
+  --color-primary: #457b9d;
+  --color-secondary: #00a8e8;
+  --color-accent: #ffd60a;
+}
+
+[data-theme="yellow"] {
+  --color-primary: #ffd60a;
+  --color-secondary: #ff9500;
+  --color-accent: #ffffff;
+}
+
+[data-theme="pink"] {
+  --color-primary: #ff006e;
+  --color-secondary: #ff1493;
+  --color-accent: #00ffcc;
+}
+
+[data-theme="black"] {
+  --color-primary: #1a1a2e;
+  --color-secondary: #16213e;
+  --color-accent: #00ffcc;
+}
+
+/* BASE */
+* {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+body {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  background: linear-gradient(135deg, var(--color-dark) 0%, var(--color-darker) 100%);
+  color: white;
+  position: relative;
+}
+
+/* REMOVED: Animated grid matrix */
+.morphin-grid-command-center {
+  position: relative;
+  min-height: 100vh;
+  isolation: isolate;
+}
+
+/* REMOVED: Moving grid-matrix animation */
+.grid-matrix {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image: 
+    linear-gradient(rgba(0,255,204,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,255,204,0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+
+/* ROUTE CONTAINER */
+.command-center-routes {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+}
+
+/* GLOBAL TRANSITIONS */
+[data-theme] * {
+  transition: color 0.4s ease, background-color 0.4s ease, border-color 0.4s ease;
+}
+
+/* FOCUS MANAGEMENT */
+*:focus {
+  outline: 2px solid var(--color-grid);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* SELECTION */
+::selection {
+  background: var(--color-grid);
+  color: var(--color-dark);
+}
+
+::-moz-selection {
+  background: var(--color-grid);
+  color: var(--color-dark);
+}
+
+/* SCROLLBAR */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(var(--color-primary), var(--color-grid));
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-grid);
+}
+
+/* REMOVED: All animations */
+[data-theme] body {
+  transition: all 0.6s ease;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .grid-matrix {
+    background-size: 30px 30px;
+  }
+}
+
+/* PRINT */
+@media print {
+  .grid-matrix,
+  .command-center-routes {
+    background: white !important;
+    color: black !important;
+  }
 }

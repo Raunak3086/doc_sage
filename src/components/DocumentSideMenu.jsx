@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo, useCallback } from 'react';
 import SkeletonLoader from './SkeletonLoader';
 import ContextMenu from './ContextMenu';
@@ -25,8 +24,8 @@ const DocumentSideMenu = ({
     doc: null,
   });
 
-  // ✅ NEW: Tab state for switching between "My Documents" and "Connect to User"
-  const [activeTab, setActiveTab] = useState('myDocuments'); // 'myDocuments' or 'connectUser'
+  // ✅ NEW: Tab state for switching between tabs
+  const [activeTab, setActiveTab] = useState('myDocuments'); // 'myDocuments' | 'connectUser'
 
   // ✅ NEW: Connect to User states
   const [connectEmail, setConnectEmail] = useState('');
@@ -41,7 +40,7 @@ const DocumentSideMenu = ({
     setIsCollapsed(!isCollapsed);
   };
 
-  // ✅ FIX 1: Ensure documents is always an array
+  // Safe documents array handling
   const safeDocuments = useMemo(() => {
     if (Array.isArray(documents)) {
       return documents;
@@ -49,7 +48,6 @@ const DocumentSideMenu = ({
     return [];
   }, [documents]);
 
-  // ✅ FIX 2: Filter with proper null/undefined checks
   const filteredDocuments = useMemo(() => {
     if (!Array.isArray(safeDocuments)) {
       return [];
@@ -67,7 +65,7 @@ const DocumentSideMenu = ({
     });
   }, [safeDocuments, searchTerm]);
 
-  // ✅ NEW: Connect to User function
+  // Connect to User handlers
   const handleConnectToUser = async (e) => {
     e.preventDefault();
 
@@ -81,7 +79,6 @@ const DocumentSideMenu = ({
     setConnectSuccess(false);
 
     try {
-      // Call backend to authenticate user and get their documents
       const response = await fetch('http://localhost:5000/api/docs/connect', {
         method: 'POST',
         headers: {
@@ -100,7 +97,6 @@ const DocumentSideMenu = ({
 
       const data = await response.json();
       console.log(data);
-      // Ensure data.docs is an array
       const userDocs = Array.isArray(data) ? data : [];
 
       setConnectedUserDocs(userDocs);
@@ -109,9 +105,8 @@ const DocumentSideMenu = ({
       setConnectEmail('');
       setConnectPassword('');
 
-      // Optional: Auto-switch to connected user's docs if any exist
       if (userDocs.length > 0) {
-        setActiveTab('connectedDocs');
+        setActiveTab('connectUser');
       }
     } catch (error) {
       console.error('Connection error:', error);
@@ -122,7 +117,6 @@ const DocumentSideMenu = ({
     }
   };
 
-  // ✅ NEW: Clear connected user session
   const handleDisconnectUser = () => {
     setConnectedUserDocs([]);
     setConnectedUserEmail('');
@@ -131,6 +125,7 @@ const DocumentSideMenu = ({
     setActiveTab('myDocuments');
   };
 
+  // Document handlers
   const handleDelete = (docId) => {
     if (window.confirm('Are you sure you want to delete this document?')) {
       onDocumentDelete(docId);
@@ -193,21 +188,21 @@ const DocumentSideMenu = ({
 
       {!isCollapsed && (
         <>
-          {/* ✅ NEW: Tab Navigation */}
+          {/* ✅ NEW: 2-Tab Navigation */}
           <div className="document-tabs">
             <button
               className={`tab-button ${activeTab === 'myDocuments' ? 'active' : ''}`}
               onClick={() => setActiveTab('myDocuments')}
               aria-label="View my documents"
             >
-              My Documents
+              📁 My Documents
             </button>
             <button
               className={`tab-button ${activeTab === 'connectUser' ? 'active' : ''}`}
               onClick={() => setActiveTab('connectUser')}
               aria-label="Connect to another user"
             >
-              Connect User
+              🔗 Connect Ranger
             </button>
           </div>
 
@@ -215,11 +210,10 @@ const DocumentSideMenu = ({
           {activeTab === 'myDocuments' && (
             <div className="document-list">
               <div className="document-list-header">
-                <h2>My Documents</h2>
+                <h2>📡 RANGER ARCHIVE</h2>
                 <span className="doc-count">{filteredDocuments.length}</span>
               </div>
 
-              {/* Loading State */}
               {isLoadingDocs ? (
                 <div className="skeleton-list">
                   <SkeletonLoader className="skeleton-item" count={6} />
@@ -229,20 +223,18 @@ const DocumentSideMenu = ({
                   <p className="error-message">⚠️ {docsError}</p>
                 </div>
               ) : safeDocuments.length === 0 ? (
-                <p className="no-documents-message">No documents yet. Create one to get started.</p>
+                <p className="no-documents-message">No ranger data crystals detected</p>
               ) : (
                 <>
-                  {/* Search Input */}
                   <input
                     type="text"
-                    placeholder="Search documents..."
+                    placeholder="🔍 Search crystals..."
                     className="search-bar"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     aria-label="Search documents"
                   />
 
-                  {/* Documents List */}
                   {filteredDocuments.length > 0 ? (
                     <ul className="documents-ul">
                       {filteredDocuments.map((doc) => (
@@ -292,7 +284,7 @@ const DocumentSideMenu = ({
                           ) : (
                             <div className="document-info">
                               <span className="doc-name" title={doc.name || doc.title}>
-                                {doc.name || doc.title || 'Untitled'}
+                                💎 {doc.name || doc.title || 'Untitled'}
                               </span>
                               {doc.updatedAt && (
                                 <span className="doc-date">
@@ -308,22 +300,21 @@ const DocumentSideMenu = ({
                       ))}
                     </ul>
                   ) : (
-                    <p className="no-documents-message">No documents match your search.</p>
+                    <p className="no-documents-message">No crystals match your search.</p>
                   )}
                 </>
               )}
             </div>
           )}
 
-          {/* ✅ NEW: CONNECT TO USER TAB */}
+          {/* ✅ CONNECT USER TAB */}
           {activeTab === 'connectUser' && (
             <div className="connect-user-section">
               <div className="connect-user-header">
-                <h2>Connect to User</h2>
-                <p className="connect-user-subtitle">Access documents from another user</p>
+                <h2>🔗 CONNECT RANGER</h2>
+                <p className="connect-user-subtitle">Access another ranger's data crystals</p>
               </div>
 
-              {/* If already connected */}
               {connectedUserEmail && (
                 <div className="connected-user-info">
                   <div className="connected-badge">
@@ -331,15 +322,14 @@ const DocumentSideMenu = ({
                     <button
                       className="disconnect-btn"
                       onClick={handleDisconnectUser}
-                      title="Disconnect from this user"
+                      title="Disconnect from this ranger"
                     >
-                      Disconnect
+                      🚪 Disconnect
                     </button>
                   </div>
                 </div>
               )}
 
-              {/* Connection Form */}
               {!connectedUserEmail ? (
                 <form className="connect-form" onSubmit={handleConnectToUser}>
                   {connectError && (
@@ -349,21 +339,21 @@ const DocumentSideMenu = ({
                   )}
 
                   <div className="form-group">
-                    <label className="form-label">Email</label>
+                    <label className="form-label">Ranger Email</label>
                     <input
                       type="email"
                       className="form-input"
                       value={connectEmail}
                       onChange={(e) => setConnectEmail(e.target.value)}
-                      placeholder="user@example.com"
+                      placeholder="ranger@example.com"
                       disabled={isLoadingConnect}
                       required
-                      aria-label="User email"
+                      aria-label="Ranger email"
                     />
                   </div>
 
                   <div className="form-group">
-                    <label className="form-label">Password</label>
+                    <label className="form-label">Access Code</label>
                     <input
                       type="password"
                       className="form-input"
@@ -372,7 +362,7 @@ const DocumentSideMenu = ({
                       placeholder="••••••••"
                       disabled={isLoadingConnect}
                       required
-                      aria-label="User password"
+                      aria-label="Access code"
                     />
                   </div>
 
@@ -381,16 +371,15 @@ const DocumentSideMenu = ({
                     className="connect-btn"
                     disabled={isLoadingConnect || !connectEmail.trim() || !connectPassword.trim()}
                   >
-                    {isLoadingConnect ? 'Connecting...' : 'Connect'}
+                    {isLoadingConnect ? '🔄 SYNCING...' : '🔗 CONNECT RANGER'}
                   </button>
                 </form>
               ) : (
-                /* Show connected user's documents */
                 <div className="connected-documents">
                   {connectedUserDocs.length > 0 ? (
                     <>
                       <h3 className="connected-docs-title">
-                        {connectedUserDocs.length} document{connectedUserDocs.length !== 1 ? 's' : ''} available
+                        💎 {connectedUserDocs.length} crystal{connectedUserDocs.length !== 1 ? 's' : ''}
                       </h3>
                       <ul className="documents-ul">
                         {connectedUserDocs.map((doc) => (
@@ -401,7 +390,7 @@ const DocumentSideMenu = ({
                           >
                             <div className="document-info">
                               <span className="doc-name" title={doc.name || doc.title}>
-                                {doc.name || doc.title || 'Untitled'}
+                                💎 {doc.name || doc.title || 'Untitled'}
                               </span>
                               {doc.updatedAt && (
                                 <span className="doc-date">
@@ -418,7 +407,7 @@ const DocumentSideMenu = ({
                     </>
                   ) : (
                     <p className="no-documents-message">
-                      No documents available from this user.
+                      No data crystals available from this ranger.
                     </p>
                   )}
                 </div>
@@ -426,7 +415,7 @@ const DocumentSideMenu = ({
             </div>
           )}
 
-          {/* Add New Document Button - Only show on My Documents tab */}
+          {/* Add New Document Button - Only My Documents tab */}
           {activeTab === 'myDocuments' && (
             <button
               className="add-new-document-btn"
@@ -434,7 +423,7 @@ const DocumentSideMenu = ({
               disabled={isLoadingDocs || !!docsError}
               aria-label="Add new document"
             >
-              + Add New Document
+              💎 UPLOAD CRYSTAL
             </button>
           )}
         </>
