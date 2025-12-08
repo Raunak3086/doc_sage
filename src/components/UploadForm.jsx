@@ -18,22 +18,19 @@ function UploadForm({ setDocs, onClose }) {
     try {
       setIsLoading(true);
 
-      // Create FormData and append file with key 'file'
+      // Create FormData and append file
       const formData = new FormData();
       formData.append('file', selectedFile);
 
-      // POST to backend - returns only { id }
+      // POST to backend
       const res = await axios.post('http://localhost:5000/api/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
-      //console.log(res);
-      // Backend returns only the id, e.g. { id: 'abc123' }
-      const id = res.data.docId;
-      console.log(id);
-      // Use selectedFile.name as the document name since backend only returns id
-      const newDoc = { id, name: selectedFile.name };
+
+      const { docId } = res.data;
+      const newDoc = { id: docId, name: selectedFile.name };
 
       // Update parent doc list
       setDocs((currentDocs) => [newDoc, ...currentDocs]);
@@ -41,8 +38,7 @@ function UploadForm({ setDocs, onClose }) {
       setIsLoading(false);
       if (onClose) onClose();
 
-      // Navigate to /interact with doc id and name
-      console.log(newDoc.id);
+      // Navigate to /interact with new doc details
       navigate('/interact', { state: { docId: newDoc.id, docName: newDoc.name } });
     } catch (error) {
       console.error('Upload error:', error);

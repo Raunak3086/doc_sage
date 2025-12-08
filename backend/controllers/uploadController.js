@@ -36,14 +36,20 @@ const uploadController = async (req, res) => {
     try {
         if (!req.file) return res.status(400).send("No file uploaded.");
 
+        const { user_id } = req.body; // Extract user_id from req.body
+
+        if (!user_id) {
+            return res.status(400).send("User ID is required in the request body.");
+        }
+
         // EXTRACT TEXT (pdfjs)
         const text = await extractTextFromPDF(req.file.buffer);
         const filename = req.file.originalname;
 
         // Save document
         const docResult = await pool.query(
-            "INSERT INTO documents (filename, text) VALUES ($1, $2) RETURNING id",
-            [filename, text]
+            "INSERT INTO documents (filename, text, user_id) VALUES ($1, $2, $3) RETURNING id",
+            [filename, text, user_id]
         );
 
         const docId = docResult.rows[0].id;
@@ -58,8 +64,8 @@ const uploadController = async (req, res) => {
             console.log(formattedEmbedding);
 
             await pool.query(
-                "INSERT INTO chunks (doc_id, content, embedding) VALUES ($1, $2, $3)",
-                [docId, chunk, formattedEmbedding]
+                "INSERT INTO chunks (doc_id, content, embedding, user_id) VALUES ($1, $2, $3, $4)",
+                [docId, chunk, formattedEmbedding, user_id]
             );
             await sleep(1000); // Wait for 1 second
         }
