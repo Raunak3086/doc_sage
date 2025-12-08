@@ -60,7 +60,7 @@ function Interact() {
   useEffect(() => {
     if (userId) {
       setIsLoadingDocs(true);
-      axios.get(`http://localhost:5000/api/docs/${userId}`)
+      axios.get(`https://doc-sage.onrender.com/api/docs/${userId}`)
         .then(response => {
           setDocs(response.data);
           setDocsError(null);
@@ -82,7 +82,7 @@ function Interact() {
     setSummary('');
     setAnswer('');
     try {
-      const response = await axios.get(`http://localhost:5000/api/file/${id}`);
+      const response = await axios.get(`https://doc-sage.onrender.com/api/file/${id}`);
       setDocumentContent(response.data.text);
     } catch (error) {
       setDocumentContentError(`Failed to load content for "${name}". Please try again.`);
@@ -100,7 +100,7 @@ function Interact() {
 
   const handleDeleteDocument = async (idToDelete) => {
     try {
-      await axios.delete(`http://localhost:5000/api/docs/delete/${idToDelete}`);
+      await axios.delete(`https://doc-sage.onrender.com/api/docs/delete/${idToDelete}`);
       const updatedDocs = docs.filter((doc) => doc.id !== idToDelete);
       setDocs(updatedDocs);
       if (docId === idToDelete) {
@@ -146,7 +146,7 @@ function Interact() {
     setIsLoadingSummarize(true);
     setSummary('');
     try {
-      const response = await axios.get(`http://localhost:5000/api/summary/${docId}`);
+      const response = await axios.get(`https://doc-sage.onrender.com/api/summary/${docId}`);
       setSummary(response.data.summary);
     } catch (error) {
       setSummary('Failed to fetch summary.');
@@ -160,7 +160,7 @@ function Interact() {
     setIsLoadingQuery(true);
     setAnswer('');
     try {
-      const response = await axios.post('http://localhost:5000/api/query', { docId, question });
+      const response = await axios.post('https://doc-sage.onrender.com/api/query', { docId, question });
       setAnswer(response.data.answer);
       setQuestion('');
     } catch (error) {
