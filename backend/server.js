@@ -18,6 +18,9 @@ app.use(express.json());
 import queryRouter from './routes/query.js';
 import fileFetchRouter from './routes/fileFetch.js';
 
+import idFetchRouter from './routes/idFetch.js';
+import connectOtherRouter from './routes/connectOther.js';
+
 // Added — authentication
 app.use('/api/auth', authRouter);
 
@@ -25,6 +28,8 @@ app.use('/api/upload', uploadRouter);
 app.use('/api/summary', summaryRouter);
 app.use('/api/query', queryRouter);
 app.use('/api/file', fileFetchRouter);
+app.use('/api/docs/connect', connectOtherRouter);
+app.use('/api/docs', idFetchRouter);
 
 app.get('/', (req, res) => {
     res.send('Hello from the backend!');
