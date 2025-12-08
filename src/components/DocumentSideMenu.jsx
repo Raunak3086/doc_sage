@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+
+import React, { useState, useMemo } from 'react';
 import SkeletonLoader from './SkeletonLoader';
 import ContextMenu from './ContextMenu';
 import './DocumentSideMenu.css';
 
 const DocumentSideMenu = ({
-  documents = [],
+  documents ,
   activeDocId,
   onDocumentSelect,
   onAddNewDocument,
@@ -28,23 +29,36 @@ const DocumentSideMenu = ({
     setIsCollapsed(!isCollapsed);
   };
 
-  // --- START OF FIX ---
-  const filteredDocuments = documents.filter((doc) => {
-    // 1. Check if doc is null/undefined before continuing.
-    if (!doc) {
-      return false;
+  // ✅ FIX 1: Ensure documents is always an array
+  const safeDocuments = useMemo(() => {
+    // Check if documents is already an array
+    if (Array.isArray(documents)) {
+      return documents;
+    }
+    return [];
+  }, [documents]);
+
+  // ✅ FIX 2: Filter with proper null/undefined checks
+  const filteredDocuments = useMemo(() => {
+    if (!Array.isArray(safeDocuments)) {
+      return [];
     }
 
-    // 2. Safely access doc.name and default to an empty string if undefined/null.
-    //    We also ensure the filter function explicitly returns a boolean value.
-    const docName = doc.name || '';
-    const search = searchTerm || '';
-    
-    // Note: The original code was missing a 'return' statement inside the filter callback block,
-    // which would cause the filter to incorrectly exclude all items.
-    return docName.toLowerCase().includes(search.toLowerCase());
-  });
-  // --- END OF FIX ---
+    const searchLower = (searchTerm || '').toLowerCase().trim();
+
+    return safeDocuments.filter((doc) => {
+      // Skip null/undefined documents
+      if (!doc || typeof doc !== 'object') {
+        return false;
+      }
+
+      // Safely get document name
+      const docName = (doc.name || doc.title || 'Untitled').toLowerCase();
+
+      // Return boolean result of includes check
+      return docName.includes(searchLower);
+    });
+  }, [safeDocuments, searchTerm]);
 
   const handleDelete = (docId) => {
     if (window.confirm('Are you sure you want to delete this document?')) {
@@ -54,20 +68,22 @@ const DocumentSideMenu = ({
 
   const handleRenameClick = (doc) => {
     setRenamingId(doc.id);
-    setDraftName(doc.name);
+    setDraftName(doc.name || doc.title || 'Untitled');
   };
 
   const handleSaveRename = (e) => {
     e.stopPropagation();
     if (draftName.trim()) {
-      onDocumentRename(renamingId, draftName);
+      onDocumentRename(renamingId, draftName.trim());
     }
     setRenamingId(null);
+    setDraftName('');
   };
 
   const handleCancelRename = (e) => {
     e.stopPropagation();
     setRenamingId(null);
+    setDraftName('');
   };
 
   const handleContextMenu = (e, doc) => {
@@ -85,7 +101,10 @@ const DocumentSideMenu = ({
   };
 
   return (
-    <div className={`document-side-menu ${isCollapsed ? 'collapsed' : ''}`} onClick={closeContextMenu}>
+    <div 
+      className={`document-side-menu ${isCollapsed ? 'collapsed' : ''}`} 
+      onClick={closeContextMenu}
+    >
       {contextMenu.visible && (
         <ContextMenu
           x={contextMenu.x}
@@ -96,37 +115,54 @@ const DocumentSideMenu = ({
           onDelete={handleDelete}
         />
       )}
-      <button onClick={toggleCollapse} className="collapse-btn">
+
+      <button onClick={toggleCollapse} className="collapse-btn" aria-label="Toggle sidebar">
         {isCollapsed ? '»' : '«'}
       </button>
+
       {!isCollapsed && (
         <>
           <div className="document-list">
             <div className="document-list-header">
               <h2>Documents</h2>
+              <span className="doc-count">{filteredDocuments.length}</span>
             </div>
+
+            {/* Loading State */}
             {isLoadingDocs ? (
               <div className="skeleton-list">
                 <SkeletonLoader className="skeleton-item" count={6} />
               </div>
             ) : docsError ? (
-              <p className="error-message">{docsError}</p>
+              <div className="error-message-container">
+                <p className="error-message">⚠️ {docsError}</p>
+              </div>
+            ) : safeDocuments.length === 0 ? (
+              <p className="no-documents-message">No documents yet. Create one to get started.</p>
             ) : (
               <>
+                {/* Search Input */}
                 <input
                   type="text"
                   placeholder="Search documents..."
                   className="search-bar"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
+                  aria-label="Search documents"
                 />
+
+                {/* Documents List */}
                 {filteredDocuments.length > 0 ? (
-                  <ul>
+                  <ul className="documents-ul">
                     {filteredDocuments.map((doc) => (
                       <li
                         key={doc.id}
                         className={`document-item ${doc.id === activeDocId ? 'active' : ''}`}
-                        onClick={() => (renamingId !== doc.id ? onDocumentSelect(doc) : null)}
+                        onClick={() => {
+                          if (renamingId !== doc.id) {
+                            onDocumentSelect(doc);
+                          }
+                        }}
                         onContextMenu={(e) => handleContextMenu(e, doc)}
                       >
                         {renamingId === doc.id ? (
@@ -136,27 +172,64 @@ const DocumentSideMenu = ({
                               value={draftName}
                               onChange={(e) => setDraftName(e.target.value)}
                               onClick={(e) => e.stopPropagation()}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                  handleSaveRename(e);
+                                } else if (e.key === 'Escape') {
+                                  handleCancelRename(e);
+                                }
+                              }}
                               autoFocus
+                              className="rename-input"
+                              aria-label="Document name"
                             />
-                            <button onClick={handleSaveRename} className="doc-action-btn">Save</button>
-                            <button onClick={handleCancelRename} className="doc-action-btn delete">Cancel</button>
+                            <button 
+                              onClick={handleSaveRename} 
+                              className="doc-action-btn save"
+                              title="Save (Enter)"
+                            >
+                              ✓
+                            </button>
+                            <button 
+                              onClick={handleCancelRename} 
+                              className="doc-action-btn delete"
+                              title="Cancel (Esc)"
+                            >
+                              ✕
+                            </button>
                           </div>
                         ) : (
                           <div className="document-info">
-                            <span className="doc-name">{doc.name}</span>
+                            <span className="doc-name" title={doc.name || doc.title}>
+                              {doc.name || doc.title || 'Untitled'}
+                            </span>
+                            {doc.updatedAt && (
+                              <span className="doc-date">
+                                {new Date(doc.updatedAt).toLocaleDateString('en-US', {
+                                  month: 'short',
+                                  day: 'numeric',
+                                })}
+                              </span>
+                            )}
                           </div>
                         )}
                       </li>
                     ))}
                   </ul>
                 ) : (
-                  <p className="no-documents-message">No documents found.</p>
-                )}    
+                  <p className="no-documents-message">No documents match your search.</p>
+                )}
               </>
             )}
           </div>
-          <button className="add-new-document-btn" onClick={onAddNewDocument} disabled={isLoadingDocs || !!docsError}>
-            Add New Document
+
+          <button 
+            className="add-new-document-btn" 
+            onClick={onAddNewDocument} 
+            disabled={isLoadingDocs || !!docsError}
+            aria-label="Add new document"
+          >
+            + Add New Document
           </button>
         </>
       )}

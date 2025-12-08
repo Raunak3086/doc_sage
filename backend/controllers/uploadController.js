@@ -36,9 +36,9 @@ const uploadController = async (req, res) => {
     try {
         if (!req.file) return res.status(400).send("No file uploaded.");
 
-        const { user_id } = req.body; // Extract user_id from req.body
+        const { userId } = req.body; // Extract userId from req.body
 
-        if (!user_id) {
+        if (!userId) {
             return res.status(400).send("User ID is required in the request body.");
         }
 
@@ -49,7 +49,7 @@ const uploadController = async (req, res) => {
         // Save document
         const docResult = await pool.query(
             "INSERT INTO documents (filename, text, user_id) VALUES ($1, $2, $3) RETURNING id",
-            [filename, text, user_id]
+            [filename, text, userId]
         );
 
         const docId = docResult.rows[0].id;
@@ -65,7 +65,7 @@ const uploadController = async (req, res) => {
 
             await pool.query(
                 "INSERT INTO chunks (doc_id, content, embedding, user_id) VALUES ($1, $2, $3, $4)",
-                [docId, chunk, formattedEmbedding, user_id]
+                [docId, chunk, formattedEmbedding, userId]
             );
             await sleep(1000); // Wait for 1 second
         }

@@ -7,8 +7,12 @@ import SkeletonLoader from '../components/SkeletonLoader';
 import './Interact.css';
 import axios from 'axios';
 
-function Interact({ docs, setDocs, isLoadingDocs, docsError }) {
+function Interact() {
   const location = useLocation();
+  const [userId, setUserId] = useState(null);
+  const [docs, setDocs] = useState([]);
+  const [isLoadingDocs, setIsLoadingDocs] = useState(true);
+  const [docsError, setDocsError] = useState(null);
   const [docId, setDocId] = useState(null);
   const [docName, setDocName] = useState('');
   const [documentContent, setDocumentContent] = useState('');
@@ -24,6 +28,30 @@ function Interact({ docs, setDocs, isLoadingDocs, docsError }) {
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
+  useEffect(() => {
+    if (location.state?.userId) {
+      setUserId(location.state.userId);
+    }
+  }, [location.state]);
+
+  useEffect(() => {
+    if (userId) {
+      setIsLoadingDocs(true);
+      axios.get(`http://localhost:5000/api/docs/${userId}`)
+        .then(response => {
+          setDocs(response.data);
+          setDocsError(null);
+        })
+        .catch(error => {
+          console.error('Failed to fetch docs', error);
+          setDocsError('Failed to fetch documents.');
+        })
+        .finally(() => {
+          setIsLoadingDocs(false);
+        });
+    }
+  }, [userId]);
+
   const fetchDocumentContent = useCallback(async (id, name) => {
     setIsLoadingDocumentContent(true);
     setDocumentContent('');
@@ -33,7 +61,7 @@ function Interact({ docs, setDocs, isLoadingDocs, docsError }) {
     try {
       const response = await axios.get(`http://localhost:5000/api/file/${id}`);
       setDocumentContent(response.data.text);
-    } catch (error) {
+    } catch (error)  {
       setDocumentContentError(`Failed to load content for "${name}". Please try again.`);
     } finally {
       setIsLoadingDocumentContent(false);
@@ -154,7 +182,7 @@ function Interact({ docs, setDocs, isLoadingDocs, docsError }) {
             </div>
           </main>
         </div>
-        {isModalOpen && <DocumentUploadModal onClose={closeModal}><UploadForm setDocs={setDocs} onClose={closeModal} /></DocumentUploadModal>}
+        {isModalOpen && <DocumentUploadModal onClose={closeModal}><UploadForm setDocs={setDocs} userId={userId} onClose={closeModal} /></DocumentUploadModal>}
       </>
     );
   }
@@ -171,7 +199,7 @@ function Interact({ docs, setDocs, isLoadingDocs, docsError }) {
             </div>
           </main>
         </div>
-        {isModalOpen && <DocumentUploadModal onClose={closeModal}><UploadForm setDocs={setDocs} onClose={closeModal} /></DocumentUploadModal>}
+        {isModalOpen && <DocumentUploadModal onClose={closeModal}><UploadForm setDocs={setDocs} userId={userId} onClose={closeModal} /></DocumentUploadModal>}
       </>
     );
   }
@@ -241,7 +269,7 @@ function Interact({ docs, setDocs, isLoadingDocs, docsError }) {
           </div>
         </main>
       </div>
-      {isModalOpen && <DocumentUploadModal onClose={closeModal}><UploadForm setDocs={setDocs} onClose={closeModal} /></DocumentUploadModal>}
+      {isModalOpen && <DocumentUploadModal onClose={closeModal}><UploadForm setDocs={setDocs} userId={userId} onClose={closeModal} /></DocumentUploadModal>}
     </>
   );
 }
