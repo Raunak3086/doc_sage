@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import './UploadForm.css';
+import './uploadForm.css';
 
 function UploadForm({ setDocs, userId, onClose }) {
   const [selectedFile, setSelectedFile] = useState(null);
