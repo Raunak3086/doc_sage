@@ -79,7 +79,7 @@ const DocumentSideMenu = ({
     setConnectSuccess(false);
 
     try {
-      const response = await fetch('http://localhost:5000/api/docs/connect', {
+      const response = await fetch('https://doc-sage.onrender.com/api/docs/connect', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
