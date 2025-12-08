@@ -29,12 +29,20 @@ const ContextMenu = ({ x, y, doc, onClose, onRename, onDelete }) => {
   return (
     <div
       ref={menuRef}
-      className="context-menu"
+      className="hologram-menu"
       style={{ top: y, left: x }}
     >
+      <div className="hologram-glow"></div>
+      <div className="menu-grid"></div>
       <ul>
-        <li onClick={handleRename}>Rename</li>
-        <li onClick={handleDelete} className="delete">Delete</li>
+        <li className="menu-item menu-item--rename" onClick={handleRename}>
+          <span className="item-icon">✏️</span>
+          <span>RENAME CRYSTAL</span>
+        </li>
+        <li className="menu-item menu-item--delete" onClick={handleDelete}>
+          <span className="item-icon">🗑️</span>
+          <span>DESTROY DATA</span>
+        </li>
       </ul>
     </div>
   );

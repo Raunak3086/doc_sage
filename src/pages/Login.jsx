@@ -1,22 +1,38 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useState, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import { loginUser } from "../api/auth";
+import "./Login.css";
 
 export default function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
   const [msg, setMsg] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate(); // Initialize navigate
+  const [selectedTheme, setSelectedTheme] = useState(
+    localStorage.getItem("selectedTheme") || "red"
+  );
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    document.body.setAttribute("data-theme", selectedTheme);
+  }, [selectedTheme]);
 
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
+  const handleThemeSelect = (theme) => {
+    setSelectedTheme(theme);
+    document.body.setAttribute("data-theme", theme);
+    localStorage.setItem("selectedTheme", theme);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    setMsg("");
+
     try {
       const res = await loginUser(form);
-      // Redirect to /interact on success
+      // Exact same behavior: navigate to /interact with userId
       navigate('/interact', { state: { userId: res.data.userId } });
     } catch (err) {
       setMsg(err.response?.data?.message || "Login failed");
@@ -28,24 +44,78 @@ export default function Login() {
   return (
     <div className="login-container">
       <div className="login-card">
-        {/* Header Section */}
+        {/* Morphin Grid Header */}
         <div className="login-header">
-          <h1 className="login-title">Welcome Back</h1>
-          <p className="login-subtitle">Sign in to your account to continue</p>
+          <h1 className="login-title">⚡ RANGER COMMAND CONSOLE</h1>
+          <p className="login-subtitle">
+            Access the Morphin Grid. Authenticate your ranger identity.
+          </p>
         </div>
 
-        {/* Form Section */}
+        {/* Theme Selector */}
+        <div className="theme-label">
+          Select Ranger Frequency Channel
+        </div>
+        <div className="theme-selector">
+          <button
+            type="button"
+            className={`theme-btn theme-btn-red ${
+              selectedTheme === "red" ? "active" : ""
+            }`}
+            onClick={() => handleThemeSelect("red")}
+          >
+            RED
+          </button>
+          <button
+            type="button"
+            className={`theme-btn theme-btn-blue ${
+              selectedTheme === "blue" ? "active" : ""
+            }`}
+            onClick={() => handleThemeSelect("blue")}
+          >
+            BLUE
+          </button>
+          <button
+            type="button"
+            className={`theme-btn theme-btn-yellow ${
+              selectedTheme === "yellow" ? "active" : ""
+            }`}
+            onClick={() => handleThemeSelect("yellow")}
+          >
+            YELLOW
+          </button>
+          <button
+            type="button"
+            className={`theme-btn theme-btn-pink ${
+              selectedTheme === "pink" ? "active" : ""
+            }`}
+            onClick={() => handleThemeSelect("pink")}
+          >
+            PINK
+          </button>
+          <button
+            type="button"
+            className={`theme-btn theme-btn-black ${
+              selectedTheme === "black" ? "active" : ""
+            }`}
+            onClick={() => handleThemeSelect("black")}
+          >
+            BLACK
+          </button>
+        </div>
+
+        {/* Command Interface */}
         <form onSubmit={handleSubmit} className="login-form">
-          {/* Email Input */}
+          {/* Command Channel */}
           <div className="form-group">
             <label htmlFor="email" className="form-label">
-              Email Address
+              Ranger Comm Channel
             </label>
             <input
               id="email"
               name="email"
               type="email"
-              placeholder="you@example.com"
+              placeholder="ranger@grid.morphin"
               value={form.email}
               onChange={handleChange}
               className="form-input"
@@ -53,10 +123,10 @@ export default function Login() {
             />
           </div>
 
-          {/* Password Input */}
+          {/* Access Code */}
           <div className="form-group">
             <label htmlFor="password" className="form-label">
-              Password
+              Morphin Access Code
             </label>
             <input
               id="password"
@@ -70,14 +140,14 @@ export default function Login() {
             />
           </div>
 
-          {/* Message Display */}
+          {/* Grid Status */}
           {msg && (
-            <div className={`message-box ${!msg.includes("failed") ? "success" : "error"}`}>
+            <div className={`message-box ${msg.includes("failed") ? "error" : "success"}`}>
               <p className="message-text">{msg}</p>
             </div>
           )}
 
-          {/* Submit Button */}
+          {/* Activation Button */}
           <button
             type="submit"
             disabled={isLoading}
@@ -86,23 +156,19 @@ export default function Login() {
             {isLoading ? (
               <>
                 <span className="spinner"></span>
-                Signing in...
+                Syncing with Grid...
               </>
             ) : (
-              "Sign In"
+              "Initiate Ranger Sequence"
             )}
           </button>
         </form>
 
-        {/* Footer */}
+        {/* Grid Access Links */}
         <div className="login-footer">
-          <a href="#forgot" className="forgot-link">
-            Forgot password?
-          </a>
-          <span className="divider">•</span>
-          <a href="#signup" className="signup-link">
-            Create account
-          </a>
+          <Link to="/register" className="forgot-link">
+            New Ranger? Initialize Profile
+          </Link>
         </div>
       </div>
     </div>

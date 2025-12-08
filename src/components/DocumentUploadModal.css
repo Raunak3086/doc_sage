@@ -1,36 +1,160 @@
-/* DocumentUploadModal.css */
+/* Morphin Grid Portal - Power Rangers Modal (Clean Version, No Effects) */
 
-.modal-overlay {
+:root {
+  --color-primary: #e63946;
+  --color-secondary: #457b9d;
+  --color-accent: #ffd60a;
+  --color-grid: #00ffcc;
+  --color-glass: rgba(255, 255, 255, 0.08);
+  --color-dark: #05050a;
+  --color-darker: #1a1a2e;
+
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-xxl: 48px;
+
+  --radius-lg: 24px;
+  --radius-xl: 36px;
+
+  --blur-glass: blur(20px);
+}
+
+/* Theme Variants (basic colors kept, no effects) */
+[data-theme="red"] { --color-primary: #e63946; --color-secondary: #ff006e; }
+[data-theme="blue"] { --color-primary: #457b9d; --color-secondary: #00a8e8; }
+[data-theme="yellow"] { --color-primary: #ffd60a; --color-secondary: #ff9500; }
+[data-theme="pink"] { --color-primary: #ff006e; --color-secondary: #ff1493; }
+[data-theme="black"] { --color-primary: #1a1a2e; --color-secondary: #16213e; }
+
+/* PORTAL OVERLAY */
+.morphin-portal {
   position: fixed;
   inset: 0;
-  background: rgba(var(--color-black-rgb), 0.8);
+  z-index: 9999;
   display: flex;
   align-items: center;
   justify-content: center;
-  backdrop-filter: blur(10px);
-  z-index: 100;
-}
-
-.modal-content {
-  background: rgba(var(--color-black-rgb), 0.5);
-  border: 1px solid rgba(var(--color-pink-rgb), 0.3);
-  border-radius: var(--spacing-lg);
   padding: var(--spacing-xl);
-  position: relative;
-  box-shadow: 0 0 40px rgba(var(--color-pink-rgb), 0.3);
-  width: 90%;
-  max-width: 600px;
+  background: rgba(0, 0, 0, 0.6);
 }
 
-.modal-close-button {
+/* Background overlay */
+.portal-overlay {
   position: absolute;
-  top: var(--spacing-md);
-  right: var(--spacing-md);
-  background: transparent;
-  border: 1px solid var(--color-pink);
-  color: var(--color-pink);
+  inset: 0;
+  background: rgba(5, 5, 10, 0.95);
+}
+
+/* PORTAL CONTENT */
+.portal-content {
+  position: relative;
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-xl);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+/* Removed full glow section entirely */
+
+/* PORTAL HEADER */
+.portal-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xl);
+  padding: var(--spacing-xxl) var(--spacing-xxl) var(--spacing-lg);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.04);
+}
+
+.portal-orb {
+  font-size: 2.8rem;
+}
+
+.portal-header h2 {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--color-primary);
+}
+
+/* PORTAL CLOSE BUTTON */
+.portal-close {
+  position: absolute;
+  top: var(--spacing-xl);
+  right: var(--spacing-xl);
+  width: 44px;
+  height: 44px;
+  border: 2px solid var(--color-grid);
   border-radius: 50%;
-  width: 32px;
-  height: 32px;
+  background: rgba(255,255,255,0.05);
+  color: var(--color-grid);
+  font-size: 1.4rem;
+  font-weight: 900;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Removed scanline, hover shine, animation */
+
+/* PORTAL BODY */
+.portal-body {
+  padding: var(--spacing-xxl);
+  max-height: calc(90vh - 140px);
+  overflow-y: auto;
+}
+
+.portal-body::-webkit-scrollbar {
+  width: 0;
+}
+
+/* Removed shimmering grid overlay */
+
+/* Removed all animations */
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .morphin-portal {
+    padding: var(--spacing-lg);
+  }
+
+  .portal-content {
+    max-width: 95vw;
+    max-height: 95vh;
+    border-radius: var(--radius-lg);
+  }
+
+  .portal-header {
+    padding: var(--spacing-xl);
+    flex-direction: column;
+    gap: var(--spacing-lg);
+    text-align: center;
+  }
+
+  .portal-orb {
+    font-size: 2.4rem;
+  }
+
+  .portal-header h2 {
+    font-size: 1.4rem;
+  }
+
+  .portal-body {
+    padding: var(--spacing-xl);
+  }
+}
+
+@media (max-width: 480px) {
+  .portal-close {
+    width: 40px;
+    height: 40px;
+    top: var(--spacing-lg);
+    right: var(--spacing-lg);
+  }
 }

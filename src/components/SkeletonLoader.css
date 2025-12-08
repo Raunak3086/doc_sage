@@ -1,25 +1,138 @@
-.skeleton-loader {
-  background-color: #2a2a2a; /* A slightly lighter shade of the dark background */
-  background-image: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0),
-    rgba(255, 255, 255, 0.05),
-    rgba(255, 255, 255, 0)
-  );
-  background-size: 200px 100%;
-  background-repeat: no-repeat;
-  border-radius: 4px;
-  display: inline-block;
-  line-height: 1;
-  width: 100%;
-  animation: skeleton-shimmer 1.5s infinite linear;
+/* Morphin Grid Skeleton Loader - CLEAN DESIGN */
+
+:root {
+  --color-primary: #e63946;
+  --color-secondary: #457b9d;
+  --color-accent: #ffd60a;
+  --color-grid: #00ffcc;
+  --color-glass: rgba(255, 255, 255, 0.08);
+  --color-dark: #05050a;
+  --color-darker: #1a1a2e;
+
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+
+  --blur-soft: blur(16px);
 }
 
-@keyframes skeleton-shimmer {
-  0% {
-    background-position: -200px 0;
+/* Theme Variants */
+[data-theme="red"] { --color-primary: #e63946; --color-secondary: #ff006e; }
+[data-theme="blue"] { --color-primary: #457b9d; --color-secondary: #00a8e8; }
+[data-theme="yellow"] { --color-primary: #ffd60a; --color-secondary: #ff9500; }
+[data-theme="pink"] { --color-primary: #ff006e; --color-secondary: #ff1493; }
+[data-theme="black"] { --color-primary: #1a1a2e; --color-secondary: #16213e; }
+
+.morphin-skeleton {
+  position: relative;
+  background: var(--color-glass);
+  backdrop-filter: var(--blur-soft);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  height: 100%;
+  min-height: 60px;
+  width: 100%;
+}
+
+/* Multiple size variants */
+.morphin-skeleton.title {
+  height: 32px;
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--spacing-sm);
+}
+
+.morphin-skeleton.text {
+  height: 18px;
+  border-radius: var(--radius-sm);
+  margin-bottom: var(--spacing-xs);
+}
+
+.morphin-skeleton.large {
+  height: 120px;
+  border-radius: var(--radius-lg);
+}
+
+.morphin-skeleton.medium {
+  height: 80px;
+  border-radius: var(--radius-md);
+}
+
+/* SIMPLE PULSE EFFECT */
+.morphin-skeleton::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.08) 50%,
+    transparent 70%
+  );
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+/* MULTIPLE SKELETON STACKING */
+.morphin-skeleton + .morphin-skeleton {
+  animation-delay: 0.2s;
+}
+
+.morphin-skeleton:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.morphin-skeleton:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+.morphin-skeleton:nth-child(4) {
+  animation-delay: 0.3s;
+}
+
+/* CLEAN ANIMATIONS */
+@keyframes skeletonPulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scaleX(1);
   }
-  100% {
-    background-position: calc(200px + 100%) 0;
+  50% {
+    opacity: 0.6;
+    transform: scaleX(1.02);
   }
+}
+
+/* GLASSMORPHISM ENHANCEMENTS */
+.morphin-skeleton {
+  box-shadow: 
+    inset 0 1px 0 rgba(255,255,255,0.1),
+    0 4px 20px rgba(0,0,0,0.4);
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .morphin-skeleton {
+    min-height: 50px;
+  }
+  
+  .morphin-skeleton.title {
+    height: 28px;
+  }
+  
+  .morphin-skeleton.large {
+    height: 100px;
+  }
+}
+
+/* UTILITY CLASSES */
+.skeleton-grid {
+  display: grid;
+  gap: var(--spacing-sm);
+}
+
+.skeleton-grid .morphin-skeleton {
+  animation-delay: calc(var(--i, 0) * 0.15s);
 }
