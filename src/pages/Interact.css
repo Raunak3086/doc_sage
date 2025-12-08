@@ -28,6 +28,7 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   text-shadow: 0 0 20px rgba(var(--color-cyan-rgb), 0.5);
+  text-align: center; /* Centered text */
 }
 
 .main-content__title--skeleton {
